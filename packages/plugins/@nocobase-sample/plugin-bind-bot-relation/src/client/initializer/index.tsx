@@ -63,16 +63,16 @@ const BotDetailsSchemaInitializer = () => {
           'x-decorator': 'FormItem',
           enum: options,
         },
-        // ApiKey: {
-        //   type: 'string',
-        //   title: 'API Key',
-        //   required: true,
-        //   'x-component': 'Variable.Input',
-        //   'x-component-props': {
-        //     scope,
-        //   },
-        //   'x-decorator': 'FormItem',
-        // },
+        ApiKey: {
+          type: 'string',
+          title: 'API Key',
+          required: true,
+          'x-component': 'Variable.Input',
+          'x-component-props': {
+            scope,
+          },
+          'x-decorator': 'FormItem',
+        },
       }}
     ></SchemaInitializerActionModal>
   );
