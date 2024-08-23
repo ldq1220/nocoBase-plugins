@@ -1,0 +1,15 @@
+{
+  "name": "@nocobase-sample/plugin-field-component-without-value",
+  "version": "1.2.35-alpha",
+  "main": "dist/server/index.js",
+  "displayName": "Action: Bind group/friend relationship",
+  "displayName.zh-CN": "绑定群/好友关系Demo",
+  "description": "",
+  "description.zh-CN": "",
+  "dependencies": {},
+  "peerDependencies": {
+    "@nocobase/client": "1.x",
+    "@nocobase/server": "1.x",
+    "@nocobase/test": "1.x"
+  }
+}
