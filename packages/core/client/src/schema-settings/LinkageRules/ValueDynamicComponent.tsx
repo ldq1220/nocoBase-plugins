@@ -20,15 +20,17 @@ import { DynamicComponent } from './DynamicComponent';
 
 const { Option } = Select;
 
+export type InputModeType = 'constant' | 'express' | 'empty';
 interface ValueDynamicComponentProps {
   fieldValue: any;
   schema: any;
   setValue: (value: any) => void;
   collectionName: string;
+  inputModes?: Array<InputModeType>;
 }
 
 export const ValueDynamicComponent = (props: ValueDynamicComponentProps) => {
-  const { fieldValue, schema, setValue, collectionName } = props;
+  const { fieldValue, schema, setValue, collectionName, inputModes } = props;
   const [mode, setMode] = useState(fieldValue?.mode || 'constant');
   const { t } = useTranslation();
   const { form } = useFormBlockContext();
@@ -120,6 +122,23 @@ export const ValueDynamicComponent = (props: ValueDynamicComponentProps) => {
       </div>
     ),
   };
+
+  const isModeContained = (mode: InputModeType) => {
+    if (!inputModes) return true;
+    else {
+      return inputModes.indexOf(mode) > -1;
+    }
+  };
+
+  type Options = Array<{ value: InputModeType; label: string }>;
+
+  const options: Options = (
+    [
+      { value: 'constant', label: t('Constant value') },
+      { value: 'express', label: t('Expression') },
+      { value: 'empty', label: t('Empty') },
+    ] as const
+  ).filter((option) => isModeContained(option.value));
   return (
     <Input.Group compact>
       <Select
@@ -135,9 +154,11 @@ export const ValueDynamicComponent = (props: ValueDynamicComponentProps) => {
           });
         }}
       >
-        <Option value="constant">{t('Constant value')}</Option>
-        <Option value="express">{t('Expression')}</Option>
-        <Option value="empty">{t('Empty')}</Option>
+        {options.map((option) => (
+          <Option value={option.value} key={option.value}>
+            {option.label}
+          </Option>
+        ))}
       </Select>
       {modeMap[fieldValue?.mode || mode]}
     </Input.Group>
