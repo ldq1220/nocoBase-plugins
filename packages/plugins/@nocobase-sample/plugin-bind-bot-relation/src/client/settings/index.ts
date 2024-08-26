@@ -9,12 +9,13 @@
 
 import { SchemaSettings } from '@nocobase/client';
 import { FieldNameLowercase } from '../constants';
-import { botFieldSchemaSettingsItem } from './items/botField';
+import { botFieldSchemaSettingsItem, changeSearchFieldSchemaSettingsItem } from './items/botField';
 
 export const botDetailsSettings = new SchemaSettings({
   name: `blockSettings:${FieldNameLowercase}`,
   items: [
     botFieldSchemaSettingsItem,
+    changeSearchFieldSchemaSettingsItem,
     {
       name: 'remove',
       type: 'remove',

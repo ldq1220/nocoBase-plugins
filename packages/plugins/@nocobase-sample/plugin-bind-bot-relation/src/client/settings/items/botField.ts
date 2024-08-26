@@ -9,11 +9,18 @@
 
 import { createSelectSchemaSettingsItem } from '@nocobase/client';
 import { tStr } from '../../locale';
-import { useFieldOptions } from '../../initializer';
+import { useFieldOptions, useSearchScopeOptions } from '../../initializer';
 
 export const botFieldSchemaSettingsItem = createSelectSchemaSettingsItem({
   name: 'BotField',
   title: tStr('Bind field'),
   useOptions: useFieldOptions,
   schemaKey: `x-component-props.BotField`,
+});
+
+export const changeSearchFieldSchemaSettingsItem = createSelectSchemaSettingsItem({
+  name: 'ChangeSearchField',
+  title: tStr('Search scope'),
+  useOptions: useSearchScopeOptions,
+  schemaKey: `x-component-props.SearchScope`,
 });

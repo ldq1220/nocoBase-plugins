@@ -16,7 +16,6 @@ import {
   useCollection,
   useCompile,
   useSchemaInitializer,
-  SchemaSettingsDefaultValue,
 } from '@nocobase/client';
 import { SearchOutlined } from '@ant-design/icons';
 import { FieldNameLowercase } from '../constants';
@@ -30,6 +29,15 @@ export function useFieldOptions(): SelectProps['options'] {
   return collection
     .getFields()
     .map((field) => ({ label: field.uiSchema?.title ? compile(field.uiSchema.title) : field.name, value: field.name }));
+}
+
+export function useSearchScopeOptions(): SelectProps['options'] {
+  const searchScopeOptions: any = [
+    { label: '群', value: 1 },
+    { label: '好友', value: 2 },
+    { label: '群 + 好友', value: 3 },
+  ];
+  return searchScopeOptions.map((field: any) => ({ label: field.label, value: field.value }));
 }
 
 const BotDetailsSchemaInitializer = () => {
@@ -48,8 +56,8 @@ const BotDetailsSchemaInitializer = () => {
       title={t('Select bind Field')}
       icon={<SearchOutlined />}
       isItem
-      onSubmit={({ BotField }) => {
-        insert(getBotDetailsSchema(BotField));
+      onSubmit={({ BotField, SearchScope }) => {
+        insert(getBotDetailsSchema(BotField, SearchScope));
       }}
       schema={{
         BotField: {
@@ -62,6 +70,17 @@ const BotDetailsSchemaInitializer = () => {
           },
           'x-decorator': 'FormItem',
           enum: options,
+        },
+        SearchScope: {
+          type: 'number',
+          title: t('Search scope'),
+          required: true,
+          'x-component': 'Select',
+          'x-component-props': {
+            placeholder: t('Please select search scope'),
+          },
+          'x-decorator': 'FormItem',
+          enum: useSearchScopeOptions(),
         },
         // ApiKey: {
         //   type: 'string',

@@ -11,13 +11,14 @@ import { ISchema } from '@nocobase/client';
 import { FieldComponentName } from '../constants';
 import { botDetailsSettings } from '../settings';
 
-export const getBotDetailsSchema = (BotField: string): ISchema => ({
+export const getBotDetailsSchema = (BotField: string, SearchScope: number): ISchema => ({
   type: 'void',
   'x-decorator': 'FormItem',
   'x-toolbar': 'FormItemSchemaToolbar',
   'x-component': FieldComponentName,
   'x-component-props': {
-    BotField: BotField,
+    BotField,
+    SearchScope,
   },
   'x-settings': botDetailsSettings.name,
 });
