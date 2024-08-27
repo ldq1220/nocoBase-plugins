@@ -22,7 +22,10 @@ export interface BotDetailsProps {
 }
 
 // 查个人信息 获取所属协会信息
-const useSearchAssicontionInfo = (associationUrl: string) => {
+const useGetSxhApikey = () => {
+  const associationUrl = '/business_association:get/'; // 商协会存放apikey的位置
+  // const associationUrl = '/association:get/';
+
   let associationId = null;
   const { data } = useRequest<{ data: any }>({ url: '/auth:check' });
   associationId = data?.data.f_business_association_id || data?.data.f_belong_association_id;
@@ -33,6 +36,14 @@ const useSearchAssicontionInfo = (associationUrl: string) => {
       ready: !!associationId, // 只有在 associationId 有值时才触发请求
     },
   );
+  const apiKey = associationData?.data['api-key'] || associationData?.data['api_key'];
+  return { apiKey };
+};
+
+// 外综服
+const useGetWzfApikey = () => {
+  const associationUrl = '/sys_paras:get'; // 商协会存放apikey的位置
+  const { data: associationData } = useRequest<{ data: any }>({ url: associationUrl });
   const apiKey = associationData?.data['api-key'] || associationData?.data['api_key'];
   return { apiKey };
 };
@@ -48,22 +59,11 @@ export const BotDetails: FC<BotDetailsProps> = observer(
     const searchFriend = [2, 3].includes(SearchScope);
 
     // const baseUrl = 'http://192.168.11.124:4000/api/';
-    // const baseUrl = 'https://brain-api.we17.fun/api/';
-    // const associationUrl = '/association:get/';
     const baseUrl = 'https://api.gemelai.com/api/';
-    const associationUrl = '/business_association:get/';
 
-    const { apiKey } = useSearchAssicontionInfo(associationUrl); // 获取apiKey
+    const { apiKey } = useGetSxhApikey(); // 商协会 获取apiKey
+    // const { apiKey } = useGetWzfApikey(); // 外综服 获取apiKey
     xAppApiKey = apiKey;
-
-    localStorage.setItem(
-      'PLUGIN-BIND-BOT-RELATION',
-      JSON.stringify({
-        baseUrl,
-        associationUrl,
-        xAppApiKey,
-      }),
-    );
 
     // 根据apikey 查企业大脑对应的绑定关系
     const {
