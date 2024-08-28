@@ -4,5 +4,8 @@
   "Please select a field": "Please select a field",
   "Search scope": "Search scope",
   "Please select search scope": "Please select search scope",
+  "Unbind work flows key": "Unbind work flows key",
+  "Please input unbind work flows key": "Please input unbind work flows key",
+  "Change unbind work flows key": "Change unbind work flows key",
   "Bind field": "Bind field"
 }

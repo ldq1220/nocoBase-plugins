@@ -56,8 +56,8 @@ const BotDetailsSchemaInitializer = () => {
       title={t('Select bind Field')}
       icon={<SearchOutlined />}
       isItem
-      onSubmit={({ BotField, SearchScope }) => {
-        insert(getBotDetailsSchema(BotField, SearchScope));
+      onSubmit={({ BotField, SearchScope, UnBindWorkFlowsKey }) => {
+        insert(getBotDetailsSchema(BotField, SearchScope, UnBindWorkFlowsKey));
       }}
       schema={{
         BotField: {
@@ -81,6 +81,16 @@ const BotDetailsSchemaInitializer = () => {
           },
           'x-decorator': 'FormItem',
           enum: useSearchScopeOptions(),
+        },
+        UnBindWorkFlowsKey: {
+          type: 'string',
+          title: t('Unbind work flows key'),
+          required: true,
+          'x-component': 'Input',
+          'x-component-props': {
+            placeholder: t('Please input unbind work flows key'),
+          },
+          'x-decorator': 'FormItem',
         },
         // ApiKey: {
         //   type: 'string',

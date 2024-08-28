@@ -7,24 +7,25 @@
  * For more information, please refer to: https://www.nocobase.com/agreement.
  */
 
-import { observer } from '@formily/react';
 import { Spin, Empty, Typography } from 'antd';
-import React, { FC } from 'react';
-import { useForm } from '@formily/react';
+import React, { FC, useState } from 'react';
+import { observer, useForm } from '@formily/react';
 import { FieldComponentName } from '../constants';
 import { useRequest } from '@nocobase/client';
 import { TableView } from './TableView';
+import { brainBaseUrl } from '../constants';
 import axios from 'axios';
 
 export interface BotDetailsProps {
   BotField: string;
   SearchScope: number;
+  UnBindWorkFlowsKey: string;
 }
 
 // 查个人信息 获取所属协会信息
 const useGetSxhApikey = () => {
   const associationUrl = '/business_association:get/'; // 商协会存放apikey的位置
-  // const associationUrl = '/association:get/';
+  // const associationUrl = '/association:get/'; // 本地测试 存放apikey的位置
 
   let associationId = null;
   const { data } = useRequest<{ data: any }>({ url: '/auth:check' });
@@ -49,17 +50,16 @@ const useGetWzfApikey = () => {
 };
 
 export const BotDetails: FC<BotDetailsProps> = observer(
-  ({ BotField, SearchScope }) => {
+  ({ BotField, SearchScope, UnBindWorkFlowsKey }) => {
     const form = useForm();
     const value = BotField ? form.values[BotField] : undefined;
+    const [unBindFlag, setUnBindFlag] = useState(true); // 解绑标记
+    const handleUnbind = () => setUnBindFlag(!unBindFlag);
     if (!BotField) return <div style={{ padding: 20 }}>请选择绑定字段</div>;
 
     let xAppApiKey = null;
     const searchGroup = [1, 3].includes(SearchScope);
     const searchFriend = [2, 3].includes(SearchScope);
-
-    // const baseUrl = 'http://192.168.11.124:4000/api/';
-    const baseUrl = 'https://api.gemelai.com/api/';
 
     const { apiKey } = useGetSxhApikey(); // 商协会 获取apiKey
     // const { apiKey } = useGetWzfApikey(); // 外综服 获取apiKey
@@ -69,11 +69,11 @@ export const BotDetails: FC<BotDetailsProps> = observer(
     const {
       data: groupData,
       loading: groupLoading,
-      error,
+      error: groupError,
     } = useRequest<{ data: any; error: any }>(
       () =>
         axios.post(
-          `${baseUrl}open/bot/bind-groups`,
+          `${brainBaseUrl}open/bot/bind-groups`,
           {
             keyword: value,
             limit: 3,
@@ -87,14 +87,18 @@ export const BotDetails: FC<BotDetailsProps> = observer(
         ),
       {
         ready: !!value && !!xAppApiKey && searchGroup,
-        refreshDeps: [BotField, value],
+        refreshDeps: [BotField, value, unBindFlag],
         debounceWait: 300,
       },
     );
-    const { data: friendData, loading: friendLoading } = useRequest<{ data: any }>(
+    const {
+      data: friendData,
+      loading: friendLoading,
+      error: friendError,
+    } = useRequest<{ data: any; error: any }>(
       () =>
         axios.post(
-          `${baseUrl}open/bot/bind-friends`,
+          `${brainBaseUrl}open/bot/bind-friends`,
           {
             keyword: value,
             limit: 3,
@@ -108,11 +112,11 @@ export const BotDetails: FC<BotDetailsProps> = observer(
         ),
       {
         ready: !!value && !!xAppApiKey && searchFriend,
-        refreshDeps: [BotField, value],
+        refreshDeps: [BotField, value, unBindFlag],
         debounceWait: 300,
       },
     );
-    const Error: any = error;
+    const Error: any = groupError || friendError;
 
     if (!value) return <Empty description="暂无数据" />;
     if (!xAppApiKey) return <Empty description="API秘钥缺失，请完善信息。" />;
@@ -130,7 +134,13 @@ export const BotDetails: FC<BotDetailsProps> = observer(
     const friendDataResult = friendData && searchFriend ? friendData.data?.result : [];
     if (groupDataResult.length === 0 && friendDataResult.length === 0) return <Empty description="暂无数据" />;
 
-    return <TableView data={[...groupDataResult, ...friendDataResult]} />;
+    return (
+      <TableView
+        data={[...groupDataResult, ...friendDataResult]}
+        UnBindWorkFlowsKey={UnBindWorkFlowsKey}
+        handleUnbind={handleUnbind}
+      />
+    );
   },
   { displayName: FieldComponentName },
 );

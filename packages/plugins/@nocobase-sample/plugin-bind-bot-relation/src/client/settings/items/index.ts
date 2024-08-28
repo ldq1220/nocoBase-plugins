@@ -7,9 +7,6 @@
  * For more information, please refer to: https://www.nocobase.com/agreement.
  */
 
-export const FieldComponentName = 'BotDetails';
-export const FieldTitle = 'Bot Details';
-export const FieldNameLowercase = 'brderDetails';
-
-export const brainBaseUrl = 'https://api.gemelai.com/api/';
-// export const brainBaseUrl = 'http://192.168.11.111:4000/api/';
+export * from './changeSearchScope';
+export * from './changeSearchtField';
+export * from './changeUnBindWorkFlowsKey';

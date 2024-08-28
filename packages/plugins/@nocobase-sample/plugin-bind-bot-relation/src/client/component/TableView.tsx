@@ -7,14 +7,14 @@
  * For more information, please refer to: https://www.nocobase.com/agreement.
  */
 
-import React from 'react';
-import { Table, Avatar, Flex, Space, Button, message, Empty } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { useCollection, useRequest } from '@nocobase/client';
+import { Table, Avatar, Flex, Space, Button, message, Popconfirm } from 'antd';
 import type { TableColumnsType } from 'antd';
 import { filterCustomerSource } from '../utils';
 import { ImIcon } from './ImIcon';
 import { useForm } from '@formily/react';
 import { FriendIcon, GroupIcon } from '../svg';
-
 interface DataItem {
   key: React.Key;
   id: number;
@@ -29,14 +29,26 @@ interface DataItem {
   remark: string;
 }
 
-export const TableView = ({ data }) => {
+/**
+ *
+ * @param data 表格数据
+ * @param UnBindWorkFlowsKey 解绑工作流key
+ * @param handleUnbind 解绑 触发数据重新请求
+ * @returns
+ */
+
+export const TableView = ({ data, UnBindWorkFlowsKey, handleUnbind }) => {
   const form = useForm();
   const [messageApi, contextHolder] = message.useMessage();
+  const [customerBinId, setCustomerBindId] = useState(null);
+
+  const { name } = useCollection(); // 当前数据表 名
 
   const columns: TableColumnsType<DataItem> = [
     {
       title: 'IM平台',
       dataIndex: 'platform',
+      width: 120,
       render: (_, record) => {
         return (
           <Flex align="center" justify="center">
@@ -50,6 +62,7 @@ export const TableView = ({ data }) => {
     {
       title: '群/好友名称',
       dataIndex: 'groupName',
+      width: 150,
       render: (_, record) => {
         if (record.groupName) {
           return (
@@ -74,6 +87,7 @@ export const TableView = ({ data }) => {
     {
       title: '群/好友id',
       dataIndex: 'userId',
+      width: 150,
       render: (_, record) => {
         if (record.groupId) {
           return <span>{record.groupId}</span>;
@@ -86,6 +100,7 @@ export const TableView = ({ data }) => {
     },
     {
       title: '备注',
+      width: 150,
       dataIndex: 'remark',
       align: 'center',
     },
@@ -96,15 +111,28 @@ export const TableView = ({ data }) => {
       align: 'center',
       render: (_, record) => (
         <Space>
-          <Button type="primary" onClick={() => saveBind(record)}>
-            绑定
-          </Button>
+          {!record.bindId ? (
+            <Button type="primary" onClick={() => SaveBind(record)}>
+              绑定
+            </Button>
+          ) : (
+            <Popconfirm
+              title="提示"
+              description="您确定要解除该客户与机器人的绑定关系吗?"
+              onConfirm={() => UnBind(record)}
+              okText="确定"
+              cancelText="取消"
+              placement="topRight"
+            >
+              <Button danger>解绑</Button>
+            </Popconfirm>
+          )}
         </Space>
       ),
     },
   ];
 
-  const saveBind = (record: DataItem) => {
+  const SaveBind = (record: DataItem) => {
     const fields: any = form.fields || {};
     const { platform, groupId, userId, avatarUrl, groupName, nickName, remark, botUserId } = record;
 
@@ -139,6 +167,30 @@ export const TableView = ({ data }) => {
 
     messageApi.success(`绑定成功，请检查对应信息。`);
   };
+
+  const UnBind = (record: DataItem) => {
+    const { bindId } = record;
+    if (!bindId) return;
+    setCustomerBindId(bindId);
+  };
+
+  const { data: unBindData, loading } = useRequest<{ data: any }>(
+    {
+      url: `/${name}:update?filterByTk=${customerBinId}&triggerWorkflows=${UnBindWorkFlowsKey}`,
+      method: 'POST',
+    },
+    {
+      ready: !!customerBinId,
+      refreshDeps: [customerBinId],
+    },
+  );
+
+  useEffect(() => {
+    // 当 unBindData 存在且请求不再处于加载状态时，调用 handleUnbind
+    if (!loading && unBindData) {
+      handleUnbind();
+    }
+  }, [loading, unBindData]);
 
   return (
     <>
