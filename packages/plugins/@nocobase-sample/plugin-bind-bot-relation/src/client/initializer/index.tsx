@@ -7,7 +7,7 @@
  * For more information, please refer to: https://www.nocobase.com/agreement.
  */
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import _ from 'lodash';
 import {
   SchemaInitializerActionModal,
@@ -16,7 +16,13 @@ import {
   useCollection,
   useCompile,
   useSchemaInitializer,
+  useCollection_deprecated,
+  useCollectionManager_deprecated,
+  useRecord,
+  useVariableOptions,
+  useFormBlockContext,
 } from '@nocobase/client';
+import { useFieldSchema } from '@formily/react';
 import { SearchOutlined } from '@ant-design/icons';
 import { FieldNameLowercase } from '../constants';
 import { useT } from '../locale';
@@ -45,10 +51,24 @@ const BotDetailsSchemaInitializer = () => {
   const { insert } = useSchemaInitializer();
   const options = useFieldOptions();
 
-  const scope = [
-    { label: 'v1', value: 'v1' },
-    { label: 'nested', value: 'nested', children: [{ label: 'v2', value: 'v2' }] },
-  ];
+  const { getField } = useCollection_deprecated();
+  const { getCollectionJoinField, getCollectionFields, getAllCollectionsInheritChain } =
+    useCollectionManager_deprecated();
+  const currentSchema = useFieldSchema();
+  const fieldSchema = currentSchema;
+  const collectionField = useMemo(
+    () => getField(fieldSchema['name']) || getCollectionJoinField(fieldSchema['x-collection-field']),
+    [fieldSchema, getCollectionJoinField, getField],
+  );
+  const { form } = useFormBlockContext();
+  const record = useRecord();
+  const variableOptions = useVariableOptions({
+    collectionField,
+    form,
+    record,
+    targetFieldSchema: fieldSchema,
+    noDisabled: true,
+  });
 
   return (
     <SchemaInitializerActionModal
@@ -56,8 +76,8 @@ const BotDetailsSchemaInitializer = () => {
       title={t('Select bind Field')}
       icon={<SearchOutlined />}
       isItem
-      onSubmit={({ BotField, SearchScope, UnBindWorkFlowsKey }) => {
-        insert(getBotDetailsSchema(BotField, SearchScope, UnBindWorkFlowsKey));
+      onSubmit={({ BotField, SearchScope, ApiKey, UnBindWorkFlowsKey }) => {
+        insert(getBotDetailsSchema(BotField, SearchScope, ApiKey, UnBindWorkFlowsKey));
       }}
       schema={{
         BotField: {
@@ -82,26 +102,27 @@ const BotDetailsSchemaInitializer = () => {
           'x-decorator': 'FormItem',
           enum: useSearchScopeOptions(),
         },
+        ApiKey: {
+          type: 'string',
+          title: 'Api Key',
+          required: true,
+          'x-component': 'Variable.Input',
+          'x-component-props': {
+            scope: variableOptions,
+            useTypedConstant: true,
+          },
+          'x-decorator': 'FormItem',
+        },
         UnBindWorkFlowsKey: {
           type: 'string',
           title: t('Unbind work flows key'),
-          required: true,
+          required: false,
           'x-component': 'Input',
           'x-component-props': {
             placeholder: t('Please input unbind work flows key'),
           },
           'x-decorator': 'FormItem',
         },
-        // ApiKey: {
-        //   type: 'string',
-        //   title: 'API Key',
-        //   required: true,
-        //   'x-component': 'Variable.Input',
-        //   'x-component-props': {
-        //     scope,
-        //   },
-        //   'x-decorator': 'FormItem',
-        // },
       }}
     ></SchemaInitializerActionModal>
   );

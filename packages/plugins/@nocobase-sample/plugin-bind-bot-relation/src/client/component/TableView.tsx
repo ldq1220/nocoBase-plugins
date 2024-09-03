@@ -124,7 +124,9 @@ export const TableView = ({ data, UnBindWorkFlowsKey, handleUnbind }) => {
               cancelText="取消"
               placement="topRight"
             >
-              <Button danger>解绑</Button>
+              <Button danger disabled={!UnBindWorkFlowsKey}>
+                解绑
+              </Button>
             </Popconfirm>
           )}
         </Space>

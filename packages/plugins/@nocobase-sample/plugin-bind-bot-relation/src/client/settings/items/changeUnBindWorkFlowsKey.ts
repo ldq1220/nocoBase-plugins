@@ -25,9 +25,7 @@ export const changeUnBindWorkFlowsKey = createModalSettingsItem({
           default: defaultValues.UnBindWorkFlowsKey,
           'x-decorator': 'FormItem',
           'x-component': 'Input',
-          'x-component-props': {
-            // disabled: true,
-          },
+          'x-component-props': {},
         },
       },
     };
