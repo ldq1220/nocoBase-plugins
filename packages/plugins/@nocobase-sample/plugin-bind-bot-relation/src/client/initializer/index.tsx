@@ -73,7 +73,7 @@ const BotDetailsSchemaInitializer = () => {
   return (
     <SchemaInitializerActionModal
       buttonText={t('Bot Details')}
-      title={t('Select bind Field')}
+      title={t('Default binding condition')}
       icon={<SearchOutlined />}
       isItem
       onSubmit={({ BotField, SearchScope, ApiKey, UnBindWorkFlowsKey }) => {

@@ -11,5 +11,5 @@ export const FieldComponentName = 'BotDetails';
 export const FieldTitle = 'Bot Details';
 export const FieldNameLowercase = 'brderDetails';
 
-// export const brainBaseUrl = 'https://api.gemelai.com/api/';
-export const brainBaseUrl = 'http://192.168.11.124:4000/api/';
+export const brainBaseUrl = 'https://api.gemelai.com/api/';
+// export const brainBaseUrl = 'http://192.168.11.124:4000/api/';
