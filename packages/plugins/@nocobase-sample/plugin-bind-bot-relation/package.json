@@ -1,6 +1,6 @@
 {
   "name": "@nocobase-sample/plugin-bind-bot-relation",
-  "version": "1.4.1-alpha",
+  "version": "1.4.2-alpha",
   "main": "dist/server/index.js",
   "displayName": "Bind the robot crowd/friend relationship",
   "displayName.zh-CN": "绑定机器人群/好友关系",

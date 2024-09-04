@@ -7,7 +7,7 @@
  * For more information, please refer to: https://www.nocobase.com/agreement.
  */
 
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import _ from 'lodash';
 import {
   SchemaInitializerActionModal,
@@ -52,8 +52,7 @@ const BotDetailsSchemaInitializer = () => {
   const options = useFieldOptions();
 
   const { getField } = useCollection_deprecated();
-  const { getCollectionJoinField, getCollectionFields, getAllCollectionsInheritChain } =
-    useCollectionManager_deprecated();
+  const { getCollectionJoinField } = useCollectionManager_deprecated();
   const currentSchema = useFieldSchema();
   const fieldSchema = currentSchema;
   const collectionField = useMemo(

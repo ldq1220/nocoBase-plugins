@@ -10,6 +10,7 @@
 import { createModalSettingsItem } from '@nocobase/client';
 import { tStr } from '../../locale';
 import React, { useMemo } from 'react';
+import { handleMaskKey } from '../../utils/index';
 import _ from 'lodash';
 import {
   SelectProps,
@@ -65,10 +66,12 @@ export const ApikeySchema = (defaultValues) => {
           type: 'string',
           'x-component': 'h4',
           'x-content': (
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '20px 0' }}>
               <div>
                 <span>当前Api Key：</span>
-                <span style={{ color: '#e18a3b' }}>{defaultValues?.ApiKey}</span>
+                <span style={{ color: '#e18a3b' }}>
+                  {isApiKeyVariable ? defaultValues?.ApiKey : handleMaskKey(defaultValues?.ApiKey)}
+                </span>
               </div>
               <div>
                 <span>类型：</span>
@@ -77,19 +80,6 @@ export const ApikeySchema = (defaultValues) => {
             </div>
           ),
         },
-        ...(isApiKeyVariable && {
-          value: {
-            type: 'string',
-            title: '变量值',
-            default: defaultValues?.ApiKey,
-            'x-component': 'Input',
-            'x-decorator': 'FormItem',
-            'x-component-props': {
-              scope: variableOptions,
-              disabled: true,
-            },
-          },
-        }),
       },
     },
     ApiKey: {
