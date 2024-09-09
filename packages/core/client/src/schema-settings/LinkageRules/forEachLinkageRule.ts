@@ -7,4 +7,10 @@
  * For more information, please refer to: https://www.nocobase.com/agreement.
  */
 
-export * from './MobileCheckerProvider';
+export function forEachLinkageRule(linkageRules: any[], callback: (action: any, rule: any) => void) {
+  linkageRules.forEach((rule) => {
+    rule.actions?.forEach((action) => {
+      callback(action, rule);
+    });
+  });
+}

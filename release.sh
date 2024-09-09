@@ -12,6 +12,20 @@ fi
 
 lerna version $new_version --preid alpha --force-publish=* --no-git-tag-version -y
 
+echo $PRO_PLUGIN_REPOS | jq -r '.[]' | while read i; do
+  cd ./packages/pro-plugins/@nocobase/$i
+  git add .
+  git commit -m "chore(versions): 😊 publish v$(jq -r '.version' ../../../../lerna.json)"
+  git tag v$(jq -r '.version' ../../../../lerna.json)
+  cd ../../../../
+done
+echo $CUSTOM_PRO_PLUGIN_REPOS | jq -r '.[]' | while read i; do
+  cd ./packages/pro-plugins/@nocobase/$i
+  git add .
+  git commit -m "chore(versions): 😊 publish v$(jq -r '.version' ../../../../lerna.json)"
+  git tag v$(jq -r '.version' ../../../../lerna.json)
+  cd ../../../../
+done
 cd ./packages/pro-plugins
 git add .
 git commit -m "chore(versions): 😊 publish v$(jq -r '.version' ../../lerna.json)"
@@ -21,7 +35,4 @@ cd ../../
 git add .
 git commit -m "chore(versions): 😊 publish v$(jq -r '.version' lerna.json)"
 git tag v$(jq -r '.version' lerna.json)
-yarn changelog --breaking-pattern "BREAKING CHANGE:"
-git add .
-git commit -m "chore: update changelog"
 # git push --atomic origin main v$(jq -r '.version' lerna.json)
