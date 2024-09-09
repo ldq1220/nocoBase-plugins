@@ -34,6 +34,7 @@ export const BotDetails: FC<BotDetailsProps> = observer(
 
     const searchGroup = [1, 3].includes(SearchScope);
     const searchFriend = [2, 3].includes(SearchScope);
+    const limit = SearchScope === 3 ? 3 : 6;
 
     const variables = useVariables();
     const localVariables = useLocalVariables();
@@ -62,7 +63,7 @@ export const BotDetails: FC<BotDetailsProps> = observer(
           `${brainBaseUrl}open/bot/bind-groups`,
           {
             keyword: value,
-            limit: 3,
+            limit,
           },
           {
             headers: {
@@ -73,7 +74,7 @@ export const BotDetails: FC<BotDetailsProps> = observer(
         ),
       {
         ready: !!value && !!xAppApiKey && searchGroup,
-        refreshDeps: [BotField, value, unBindFlag],
+        refreshDeps: [BotField, value, unBindFlag, SearchScope],
         debounceWait: 300,
       },
     );
@@ -87,7 +88,7 @@ export const BotDetails: FC<BotDetailsProps> = observer(
           `${brainBaseUrl}open/bot/bind-friends`,
           {
             keyword: value,
-            limit: 3,
+            limit,
           },
           {
             headers: {
@@ -98,7 +99,7 @@ export const BotDetails: FC<BotDetailsProps> = observer(
         ),
       {
         ready: !!value && !!xAppApiKey && searchFriend,
-        refreshDeps: [BotField, value, unBindFlag],
+        refreshDeps: [BotField, value, unBindFlag, SearchScope],
         debounceWait: 300,
       },
     );

@@ -9,12 +9,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { useCollection, useRequest } from '@nocobase/client';
-import { Table, Avatar, Flex, Space, Button, message, Popconfirm } from 'antd';
+import { Table, Avatar, Image, Flex, Space, Button, message, Popconfirm, Tooltip } from 'antd';
 import type { TableColumnsType } from 'antd';
 import { filterCustomerSource } from '../utils';
 import { ImIcon } from './ImIcon';
 import { useForm } from '@formily/react';
 import { FriendIcon, GroupIcon } from '../svg';
+import defaultBotAvatar from '../image/bot_head.jpg';
+
 interface DataItem {
   key: React.Key;
   id: number;
@@ -63,26 +65,30 @@ export const TableView = ({ data, UnBindWorkFlowsKey, handleUnbind }) => {
       title: '群/好友名称',
       dataIndex: 'groupName',
       width: 150,
+      ellipsis: true,
       render: (_, record) => {
         if (record.groupName) {
           return (
-            <Flex justify="center" align="center">
+            <>
               <GroupIcon />
-              <span style={{ margin: '0 8px' }}>{record.groupName}</span>
-            </Flex>
+              <Tooltip placement="topLeft" title={record.groupName}>
+                <span style={{ margin: '0 8px' }}>{record.groupName}</span>
+              </Tooltip>
+            </>
           );
         }
         if (record.nickName) {
           return (
-            <Flex justify="center" align="center">
+            <>
               <FriendIcon />
               {record.avatarUrl ? <Avatar src={record.avatarUrl} style={{ marginLeft: '8px' }} /> : <></>}
-              <span style={{ margin: '0 8px' }}>{record.nickName}</span>
-            </Flex>
+              <Tooltip placement="topLeft" title={record.nickName}>
+                <span style={{ margin: '0 8px' }}>{record.nickName}</span>
+              </Tooltip>
+            </>
           );
         }
       },
-      align: 'center',
     },
     {
       title: '群/好友id',
@@ -103,6 +109,33 @@ export const TableView = ({ data, UnBindWorkFlowsKey, handleUnbind }) => {
       width: 150,
       dataIndex: 'remark',
       align: 'center',
+      ellipsis: {
+        showTitle: false,
+      },
+      render: (address) => (
+        <Tooltip placement="topLeft" title={address}>
+          {address}
+        </Tooltip>
+      ),
+    },
+    {
+      title: '所属机器人',
+      width: 180,
+      align: 'center',
+      render: (_, record: any) => (
+        <Space>
+          <Flex justify="center" align="center">
+            <div style={{ width: '30px', height: '30px', borderRadius: '50%' }}>
+              {record.botUser.avatar ? (
+                <Avatar src={record.botUser.avatar}></Avatar>
+              ) : (
+                <Avatar src={defaultBotAvatar}></Avatar>
+              )}
+            </div>
+            <span style={{ marginLeft: '8px' }}>{record.botUser.name}</span>
+          </Flex>
+        </Space>
+      ),
     },
     {
       title: '操作',
