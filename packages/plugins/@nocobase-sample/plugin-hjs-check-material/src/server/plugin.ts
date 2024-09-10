@@ -9,7 +9,7 @@
 
 import { Plugin } from '@nocobase/server';
 
-export class PluginFieldComponentWithoutValueServer extends Plugin {
+export class PluginHjsCheckMaterialServer extends Plugin {
   async afterAdd() {}
 
   async beforeLoad() {}
@@ -25,4 +25,4 @@ export class PluginFieldComponentWithoutValueServer extends Plugin {
   async remove() {}
 }
 
-export default PluginFieldComponentWithoutValueServer;
+export default PluginHjsCheckMaterialServer;

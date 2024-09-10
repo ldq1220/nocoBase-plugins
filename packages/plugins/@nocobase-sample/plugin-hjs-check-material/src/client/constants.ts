@@ -7,6 +7,6 @@
  * For more information, please refer to: https://www.nocobase.com/agreement.
  */
 
-export const FieldComponentName = 'OrderDetails';
-export const FieldTitle = 'Order Details';
-export const FieldNameLowercase = 'orderDetails';
+export const FieldComponentName = 'HjsCheckMaterial';
+export const FieldTitle = 'Hjs check material';
+export const FieldNameLowercase = 'hjs check material';
