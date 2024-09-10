@@ -43,7 +43,7 @@ export const BotDetails: FC<BotDetailsProps> = observer(
       const fetchApiKey = async () => {
         if (isVariable(ApiKey)) {
           const result = await variables?.parseVariable(ApiKey, localVariables);
-          setXAppApiKey(result);
+          setXAppApiKey(result.value);
         } else {
           setXAppApiKey(ApiKey);
         }
