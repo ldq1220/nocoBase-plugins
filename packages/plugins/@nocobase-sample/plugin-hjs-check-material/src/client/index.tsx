@@ -8,22 +8,24 @@
  */
 
 import { Plugin } from '@nocobase/client';
+import { HjsCheckMaterials } from './component';
+import { FieldComponentName } from './constants';
+import { hjsCheckMaterialInitializerItem } from './initializer';
+import { hsjCheckMaterialSettings } from './settings';
 
 export class PluginHjsCheckMaterialClient extends Plugin {
-  async afterAdd() {
-    // await this.app.pm.add()
-  }
+  async afterAdd() {}
 
   async beforeLoad() {}
 
-  // You can get and modify the app instance here
   async load() {
-    console.log(this.app);
-    // this.app.addComponents({})
-    // this.app.addScopes({})
-    // this.app.addProvider()
-    // this.app.addProviders()
-    // this.app.router.add()
+    this.app.addComponents({ [FieldComponentName]: HjsCheckMaterials });
+    this.app.schemaInitializerManager.addItem(
+      'table:configureColumns',
+      hjsCheckMaterialInitializerItem.name,
+      hjsCheckMaterialInitializerItem,
+    );
+    this.app.schemaSettingsManager.add(hsjCheckMaterialSettings);
   }
 }
 

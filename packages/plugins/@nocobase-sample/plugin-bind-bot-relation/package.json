@@ -3,7 +3,7 @@
   "version": "1.4.6-alpha",
   "main": "dist/server/index.js",
   "displayName": "Bind the robot crowd/friend relationship",
-  "displayName.zh-CN": "绑定机器人ya群/好友关系",
+  "displayName.zh-CN": "绑定机器人群/好友关系",
   "description": "Call the enterprise brain to search the robot crowd/friend relationship data, select and bind customers.",
   "description.zh-CN": "调用企业大脑搜索机器人群/好友关系数据，选择并绑定客户。",
   "dependencies": {},
