@@ -25,6 +25,7 @@ export class PluginHjsCheckMaterialClient extends Plugin {
       hjsCheckMaterialInitializerItem.name,
       hjsCheckMaterialInitializerItem,
     );
+
     this.app.schemaSettingsManager.add(hsjCheckMaterialSettings);
   }
 }
