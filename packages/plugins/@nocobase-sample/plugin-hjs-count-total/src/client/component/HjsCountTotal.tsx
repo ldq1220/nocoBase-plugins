@@ -13,17 +13,16 @@ import React, { FC, useEffect, useState } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
 import { useForm } from '@formily/react';
 import { FieldComponentName } from '../constants';
-import { useDuplicateChecker } from '../hooks/useDuplicateChecker';
 import NP from 'number-precision';
 import axios from 'axios';
 
-export interface BotDetailsProps {
+export interface HjsCountTotalProps {
   totalField: string;
   materialField: string;
   customerField: string;
 }
 
-export const HjsCountTotal: FC<BotDetailsProps> = observer(
+export const HjsCountTotal: FC<HjsCountTotalProps> = observer(
   ({ totalField, materialField, customerField }) => {
     const form = useForm();
     const [messageApi, messageContextHolder] = message.useMessage();
@@ -39,42 +38,38 @@ export const HjsCountTotal: FC<BotDetailsProps> = observer(
       if (materialTypeData.length === 0) return messageApi.warning('请添加物料。');
 
       try {
-        const checkMaterialText = materialTypeData.join(' \n ');
         setLoading(true);
-        const res = await axios({
+        const checkMaterialText = materialTypeData.join(' \n ');
+        const { data } = await axios({
           url: 'https://tk04dul26h.gzg.sealos.run/hjs/getMaterialMain',
           method: 'POST',
           data: {
             logicFlowAppId: 1164,
             userInput: checkMaterialText,
-            companyName: customerInfo.customerName,
+            companyName: customerInfo.company_name,
             type: 'text',
             autoBill: false,
           },
         });
-        const { finalInventoryData, priceData } = res.data;
+
+        const { finalInventoryData, priceData } = data;
         const finalInventoryCodeData = finalInventoryData
           .map((item: { code: any }) => item.code)
           .filter((item: any) => item);
 
         materialData.forEach((materialItem: { type: string; price: number; inventory: number }) => {
-          if (!finalInventoryCodeData.includes(materialItem.type)) materialItem.inventory = 0;
-          finalInventoryData.forEach((finalInventoryItem: { code: string; qty: number }) => {
-            if (finalInventoryItem.code.includes(materialItem.type)) materialItem.inventory = finalInventoryItem.qty;
-          });
+          materialItem.inventory = finalInventoryCodeData.includes(materialItem.type)
+            ? finalInventoryData.find((item: { code: string }) => item.code.includes(materialItem.type))?.qty || 0
+            : 0;
 
-          if (priceData.length === 0) {
-            materialItem.price = null;
-          } else {
-            priceData.forEach((priceItem: { code: string; price: number }) => {
-              if (priceItem.code.includes(materialItem.type)) materialItem.price = priceItem.price;
-            });
-          }
+          materialItem.price = priceData.length
+            ? priceData.find((item: { code: string }) => item.code.includes(materialItem.type))?.price || null
+            : null;
         });
 
         priceData.length === 0
           ? messageApi.warning(
-              `所属客户：${customerInfo.customerName} 单价异常，请核对客户信息重新查料或手动输入单价。`,
+              `所属客户：${customerInfo.company_name} 单价异常，请核对客户信息重新查料或手动输入单价。`,
             )
           : message.success('查料成功,请核对物料信息。');
       } finally {
