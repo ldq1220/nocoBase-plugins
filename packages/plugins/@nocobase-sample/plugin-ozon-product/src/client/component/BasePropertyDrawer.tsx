@@ -9,21 +9,19 @@
 
 import React, { FC, useState, useImperativeHandle, forwardRef } from 'react';
 import { Drawer } from 'antd';
-import AddPropertyContainer from './AddPropertyContainer';
-import UpdatePropertyContainer from './UpdatePropertyContainer';
+import AddAndUpdatePropertyContainer from './AddAndUpdatePropertyContainer';
 import LookPropertyContainer from './LookPropertyContainer';
-import BottonGroup from './BottonGroup';
 
 interface BasePropertyDrawerProps {
   ref: any;
-  typeField: string;
-  operationType: string;
-  operationTypeText: string;
   typeValue: any;
+  operationType: string;
+  primaryProperty: string;
+  operationTypeText: string;
 }
 
 const BasePropertyDrawer: FC<BasePropertyDrawerProps> = forwardRef(
-  ({ typeField, operationType, operationTypeText, typeValue }, ref) => {
+  ({ typeValue, operationType, primaryProperty, operationTypeText }, ref) => {
     const [open, setOpen] = useState(false);
 
     // 暴露给父组件的 `showDrawer` 方法
@@ -39,11 +37,22 @@ const BasePropertyDrawer: FC<BasePropertyDrawerProps> = forwardRef(
 
     return (
       <Drawer title={operationTypeText + '基础属性'} onClose={onClose} open={open} width="40%">
-        {operationType === 'add' && <AddPropertyContainer typeValue={typeValue} open={open}></AddPropertyContainer>}
-        {operationType === 'update' && (
-          <UpdatePropertyContainer typeValue={typeValue} open={open}></UpdatePropertyContainer>
+        {['add', 'update'].includes(operationType) && (
+          <AddAndUpdatePropertyContainer
+            typeValue={typeValue}
+            primaryProperty={primaryProperty}
+            open={open}
+            onClose={onClose}
+          ></AddAndUpdatePropertyContainer>
         )}
-        {operationType === 'look' && <LookPropertyContainer typeValue={typeValue} open={open}></LookPropertyContainer>}
+        {operationType === 'look' && (
+          <LookPropertyContainer
+            typeValue={typeValue}
+            primaryProperty={primaryProperty}
+            open={open}
+            onClose={onClose}
+          ></LookPropertyContainer>
+        )}
       </Drawer>
     );
   },

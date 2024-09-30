@@ -41,8 +41,8 @@ const ProductListSchemaInitializer = () => {
       title={t('Preinstall field')}
       icon={<BoldOutlined />}
       isItem
-      onSubmit={({ typeField, operationType }) => {
-        insert(getProductListSchema(typeField, operationType));
+      onSubmit={({ typeField, operationType, primaryProperty }) => {
+        insert(getProductListSchema(typeField, operationType, primaryProperty));
       }}
       schema={{
         typeField: {
@@ -64,6 +64,14 @@ const ProductListSchemaInitializer = () => {
             { label: t('Update'), value: 'update' },
             { label: t('Look'), value: 'look' },
           ],
+        },
+        primaryProperty: {
+          type: 'string',
+          title: t('Primary property'),
+          required: true,
+          'x-component': 'Select',
+          'x-decorator': 'FormItem',
+          enum: options,
         },
       }}
     ></SchemaInitializerActionModal>

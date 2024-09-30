@@ -9,9 +9,9 @@
 
 import React, { FC, useState, useEffect, useRef } from 'react';
 import { setTypeId } from '../utils';
-import { Flex, Empty, Typography } from 'antd';
+import { Flex, Button, message } from 'antd';
 import { useForm } from '@formily/react';
-import { getAttributeValueOptions } from '../api';
+import { reqAttributeList, getAttributeValueOptions } from '../api';
 import ViewSpin from './ViewSpin';
 import ViewError from './ViewError';
 import PropertyFormList from './PropertyFormList';
@@ -23,8 +23,9 @@ interface Props {
   onClose: () => void;
 }
 
-const LookPropertyContainer: FC<Props> = ({ typeValue, primaryProperty, open, onClose }) => {
+const AddAndUpdatePropertyContainer: FC<Props> = ({ typeValue, primaryProperty, open, onClose }) => {
   const form = useForm();
+  const [messageApi, contextHolder] = message.useMessage();
 
   const [attributeList, setAttributeList] = useState([]);
   const [apiError, setApiError] = useState(true);
@@ -33,19 +34,23 @@ const LookPropertyContainer: FC<Props> = ({ typeValue, primaryProperty, open, on
 
   const { id, parentId } = typeValue ?? { id: undefined, parentId: undefined };
   const typeId = setTypeId(id); // 类型ID
-  const jsonData = form.values[primaryProperty];
 
   // 获取类别特征列表
   const getAttributeList = async () => {
     setLoading(true);
     setApiError(false);
     try {
+      const jsonData = form.values[primaryProperty];
       let attributeList: any = [];
       if (jsonData) {
         // 如果已经存在了json数据则直接拿json数据来渲染。
         attributeList = await getAttributeValueOptions(jsonData, parentId, typeId);
-        setAttributeList(attributeList);
+      } else {
+        const data: any = await reqAttributeList(typeId, parentId);
+        attributeList = await getAttributeValueOptions(data.result, parentId, typeId);
       }
+
+      setAttributeList(attributeList);
     } catch (error) {
       console.log('error----', error);
       setApiError(true);
@@ -62,18 +67,30 @@ const LookPropertyContainer: FC<Props> = ({ typeValue, primaryProperty, open, on
     if (open) getAttributeList();
   }, [open]);
 
-  if (!jsonData)
-    return (
-      <Empty
-        image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
-        imageStyle={{ height: 60 }}
-        description={<Typography.Text>暂无配置基础属性。</Typography.Text>}
-      ></Empty>
-    );
+  // 保存
+  const handleSave = async () => {
+    try {
+      if (propertyFormRef.current) {
+        await propertyFormRef.current.validateFields();
+        // 验证通过
+        messageApi.success('保存成功');
+        const jsonData = attributeList.map((item) => {
+          delete item.options;
+          return item;
+        });
+        form.values[primaryProperty] = jsonData;
+        onClose();
+      }
+    } catch (error) {
+      messageApi.error('请填写所有必填字段');
+    }
+  };
+
   if (apiError) return <ViewError getAttributeList={getAttributeList}></ViewError>;
 
   return (
     <>
+      {contextHolder}
       {viewLoading ? (
         <ViewSpin></ViewSpin>
       ) : (
@@ -81,10 +98,14 @@ const LookPropertyContainer: FC<Props> = ({ typeValue, primaryProperty, open, on
           <Flex style={{ flex: 1, overflow: 'auto', width: '100%' }}>
             <PropertyFormList
               attributeList={attributeList}
-              disabled={true}
               onAttributeListChange={onAttributeListChange}
               ref={propertyFormRef}
             />
+          </Flex>
+          <Flex align="end" style={{ height: '48px', width: '100%' }}>
+            <Button type="primary" onClick={handleSave}>
+              保存
+            </Button>
           </Flex>
         </Flex>
       )}
@@ -92,4 +113,4 @@ const LookPropertyContainer: FC<Props> = ({ typeValue, primaryProperty, open, on
   );
 };
 
-export default LookPropertyContainer;
+export default AddAndUpdatePropertyContainer;

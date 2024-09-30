@@ -29,6 +29,12 @@ export class PluginOzonProductClient extends Plugin {
       productListInitializerItem,
     );
 
+    this.app.schemaInitializerManager.addItem(
+      'details:configureFields',
+      productListInitializerItem.name,
+      productListInitializerItem,
+    );
+
     this.app.schemaSettingsManager.add(productListSettings);
   }
 }

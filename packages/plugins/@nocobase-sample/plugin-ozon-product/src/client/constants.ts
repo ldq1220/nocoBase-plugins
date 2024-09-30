@@ -11,8 +11,10 @@ export const FieldComponentName = 'OzonProduct';
 export const FieldTitle = 'Ozon Product';
 export const FieldNameLowercase = 'ozonProduct';
 
-const baseUrl = 'https://api-seller.ozon.ru/v1/';
+export const productListName = 'ozon_product'; // localhost
+// export const productListName = 'product'; // ozon ERP
 
+const baseUrl = 'https://api-seller.ozon.ru/v1/';
 export const Config = {
   api: {
     category: `${baseUrl}description-category/tree`,

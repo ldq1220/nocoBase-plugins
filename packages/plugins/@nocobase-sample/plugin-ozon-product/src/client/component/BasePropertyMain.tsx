@@ -9,25 +9,27 @@
 
 import { observer } from '@formily/react';
 import { Button, message } from 'antd';
-import React, { FC, useRef, useState } from 'react';
+import React, { FC, useRef, useState, useEffect } from 'react';
 import { useForm } from '@formily/react';
 import { FieldComponentName } from '../constants';
 import BasePropertyDrawer from './BasePropertyDrawer';
-import { useRequest } from '@nocobase/client';
 
 export interface Props {
-  typeField?: string;
-  operationType?: string;
+  typeField: string;
+  operationType: string;
+  primaryProperty: string;
 }
 
 export const BasePropertyMain: FC<Props> = observer(
-  ({ typeField, operationType }) => {
+  ({ typeField, operationType, primaryProperty }) => {
     const form = useForm();
-    const drawerRef = useRef(null);
-    const [hasInit, setHasInit] = useState(false);
     const [messageApi, contextHolder] = message.useMessage();
 
-    const operationTypeText = operationType === 'add' ? '添加' : operationType === 'update' ? '修改' : '查看';
+    const drawerRef = useRef(null);
+    const [hasInit, setHasInit] = useState(false);
+    const [prevTypeValue, setPrevTypeValue] = useState(undefined);
+
+    const operationTypeText = operationType === 'add' ? '添加' : operationType === 'update' ? '编辑' : '查看';
     const typeValue = typeField ? form.values[typeField] : undefined;
 
     const handleOpenDrawer = () => {
@@ -41,10 +43,27 @@ export const BasePropertyMain: FC<Props> = observer(
         return messageApi.info('请选择具体商品类目');
       } else {
         setHasInit(true);
+        comparisonType(); // 对比商品类目是否发生变化
+
         setTimeout(() => {
           if (drawerRef.current) drawerRef.current.showDrawer(); // 打开抽屉
         }, 0);
       }
+    };
+
+    useEffect(() => {
+      if (!prevTypeValue && typeValue) {
+        setPrevTypeValue(typeValue); // 初始化 存储商品类目信息
+      }
+    }, [typeValue]);
+
+    useEffect(() => {
+      console.log('prevTypeValue--------', prevTypeValue);
+    }, [prevTypeValue]);
+
+    // 对比商品类目是否发生变化
+    const comparisonType = () => {
+      console.log('typeValue,prevTypeValue----', typeValue, prevTypeValue);
     };
 
     return (
@@ -59,8 +78,8 @@ export const BasePropertyMain: FC<Props> = observer(
         {hasInit && (
           <BasePropertyDrawer
             ref={drawerRef}
-            typeField={typeField}
             operationType={operationType}
+            primaryProperty={primaryProperty}
             operationTypeText={operationTypeText}
             typeValue={typeValue}
           ></BasePropertyDrawer>

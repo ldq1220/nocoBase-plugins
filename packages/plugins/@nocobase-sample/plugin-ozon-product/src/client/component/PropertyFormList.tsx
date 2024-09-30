@@ -7,16 +7,18 @@
  * For more information, please refer to: https://www.nocobase.com/agreement.
  */
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useImperativeHandle, forwardRef } from 'react';
 import { Form, Input, Row, Col, Select } from 'antd';
 import { debounce } from 'lodash';
 
 interface Props {
+  ref: any;
   attributeList: any[];
+  disabled?: boolean;
   onAttributeListChange: (newList: any[]) => void;
 }
 
-const PropertyFormList: React.FC<Props> = ({ attributeList, onAttributeListChange }) => {
+const PropertyFormList: React.FC<Props> = forwardRef(({ attributeList, disabled, onAttributeListChange }, ref) => {
   const [form] = Form.useForm();
 
   const debouncedOnValuesChange = useMemo(
@@ -32,10 +34,14 @@ const PropertyFormList: React.FC<Props> = ({ attributeList, onAttributeListChang
         });
 
         onAttributeListChange(updatedList);
-        console.log('更新后的列表:', updatedList);
       }, 300),
     [attributeList, onAttributeListChange],
   );
+
+  // 暴露验证方法给父组件
+  useImperativeHandle(ref, () => ({
+    validateFields: () => form.validateFields(),
+  }));
 
   return (
     <Form
@@ -45,6 +51,7 @@ const PropertyFormList: React.FC<Props> = ({ attributeList, onAttributeListChang
       onValuesChange={debouncedOnValuesChange}
       autoComplete="off"
       style={{ width: '98%' }}
+      disabled={disabled}
     >
       <Form.List name="attributes">
         {() =>
@@ -86,6 +93,6 @@ const PropertyFormList: React.FC<Props> = ({ attributeList, onAttributeListChang
       </Form.List>
     </Form>
   );
-};
+});
 
 export default PropertyFormList;

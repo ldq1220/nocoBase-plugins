@@ -9,10 +9,14 @@
 
 import { SchemaSettings } from '@nocobase/client';
 import { FieldNameLowercase } from '../constants';
+import { changeProductType, changeOperationType, changePrimaryProperty } from './items';
 
 export const productListSettings = new SchemaSettings({
   name: `blockSettings:${FieldNameLowercase}`,
   items: [
+    changeProductType,
+    changeOperationType,
+    changePrimaryProperty,
     {
       name: 'remove',
       type: 'remove',

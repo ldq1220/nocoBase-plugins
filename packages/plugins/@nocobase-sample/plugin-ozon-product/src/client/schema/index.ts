@@ -11,7 +11,7 @@ import { ISchema } from '@nocobase/client';
 import { FieldComponentName } from '../constants';
 import { productListSettings } from '../settings';
 
-export const getProductListSchema = (typeField: string, operationType: string): ISchema => ({
+export const getProductListSchema = (typeField: string, operationType: string, primaryProperty: string): ISchema => ({
   type: 'void',
   'x-decorator': 'FormItem',
   'x-toolbar': 'FormItemSchemaToolbar',
@@ -19,6 +19,7 @@ export const getProductListSchema = (typeField: string, operationType: string): 
   'x-component-props': {
     typeField,
     operationType,
+    primaryProperty,
   },
   'x-settings': productListSettings.name,
 });
