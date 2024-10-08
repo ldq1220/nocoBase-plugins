@@ -31,8 +31,8 @@ const LookPropertyContainer: FC<Props> = ({ typeValue, primaryProperty, open, on
   const [viewLoading, setLoading] = useState(false);
   const propertyFormRef = useRef(null);
 
-  const { id, parentId } = typeValue ?? { id: undefined, parentId: undefined };
-  const typeId = setTypeId(id); // 类型ID
+  const { ozon_id, ozon_parent_id } = typeValue ?? { ozon_id: undefined, ozon_parent_id: undefined };
+  const typeId = setTypeId(ozon_id); // 类型ID
   const jsonData = form.values[primaryProperty];
 
   // 获取类别特征列表
@@ -43,7 +43,7 @@ const LookPropertyContainer: FC<Props> = ({ typeValue, primaryProperty, open, on
       let attributeList: any = [];
       if (jsonData) {
         // 如果已经存在了json数据则直接拿json数据来渲染。
-        attributeList = await getAttributeValueOptions(jsonData, parentId, typeId);
+        attributeList = await getAttributeValueOptions(jsonData, ozon_parent_id, typeId);
         setAttributeList(attributeList);
       }
     } catch (error) {

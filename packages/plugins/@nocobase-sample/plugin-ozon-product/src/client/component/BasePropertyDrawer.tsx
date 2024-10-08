@@ -45,7 +45,7 @@ const BasePropertyDrawer: FC<BasePropertyDrawerProps> = forwardRef(
             onClose={onClose}
           ></AddAndUpdatePropertyContainer>
         )}
-        {operationType === 'look' && (
+        {['look'].includes(operationType) && (
           <LookPropertyContainer
             typeValue={typeValue}
             primaryProperty={primaryProperty}

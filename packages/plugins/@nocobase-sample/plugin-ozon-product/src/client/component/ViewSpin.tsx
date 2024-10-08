@@ -13,7 +13,7 @@ import { Alert, Flex, Spin } from 'antd';
 const ViewSpin: React.FC = () => (
   <Flex gap="middle" vertical>
     <Spin tip="加载中...">
-      <Alert message="商品属性" description="数据加载中，请耐心等待。。。" type="info" />
+      <Alert message="商品基础属性" description="数据加载中，请耐心等待。。。" type="info" />
     </Spin>
   </Flex>
 );

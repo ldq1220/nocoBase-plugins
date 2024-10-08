@@ -32,22 +32,23 @@ const AddAndUpdatePropertyContainer: FC<Props> = ({ typeValue, primaryProperty, 
   const [viewLoading, setLoading] = useState(false);
   const propertyFormRef = useRef(null);
 
-  const { id, parentId } = typeValue ?? { id: undefined, parentId: undefined };
-  const typeId = setTypeId(id); // 类型ID
+  const { ozon_id, ozon_parent_id } = typeValue ?? { ozon_id: undefined, ozon_parent_id: undefined };
+  const typeId = setTypeId(ozon_id); // 类型ID
 
   // 获取类别特征列表
   const getAttributeList = async () => {
     setLoading(true);
     setApiError(false);
+
     try {
       const jsonData = form.values[primaryProperty];
       let attributeList: any = [];
       if (jsonData) {
         // 如果已经存在了json数据则直接拿json数据来渲染。
-        attributeList = await getAttributeValueOptions(jsonData, parentId, typeId);
+        attributeList = await getAttributeValueOptions(jsonData, ozon_parent_id, typeId);
       } else {
-        const data: any = await reqAttributeList(typeId, parentId);
-        attributeList = await getAttributeValueOptions(data.result, parentId, typeId);
+        const data: any = await reqAttributeList(typeId, ozon_parent_id);
+        attributeList = await getAttributeValueOptions(data.result, ozon_parent_id, typeId);
       }
 
       setAttributeList(attributeList);

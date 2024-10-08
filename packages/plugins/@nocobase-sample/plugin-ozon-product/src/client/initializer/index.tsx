@@ -16,7 +16,7 @@ import {
   useCompile,
   useSchemaInitializer,
 } from '@nocobase/client';
-import { BoldOutlined } from '@ant-design/icons';
+import { ProfileOutlined } from '@ant-design/icons';
 
 import { FieldNameLowercase } from '../constants';
 import { useT } from '../locale';
@@ -37,9 +37,9 @@ const ProductListSchemaInitializer = () => {
   const options = useFieldOptions();
   return (
     <SchemaInitializerActionModal
-      buttonText={t('Base property')}
+      buttonText={t('Product base property')}
       title={t('Preinstall field')}
-      icon={<BoldOutlined />}
+      icon={<ProfileOutlined />}
       isItem
       onSubmit={({ typeField, operationType, primaryProperty }) => {
         insert(getProductListSchema(typeField, operationType, primaryProperty));

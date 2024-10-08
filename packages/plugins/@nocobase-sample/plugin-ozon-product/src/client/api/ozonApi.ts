@@ -21,6 +21,8 @@ const { api, headers, language } = Config;
  * @returns
  */
 export const reqAttributeList = async (typeId: number, parentId: number) => {
+  if (typeof parentId === 'string') parentId = Number(parentId);
+
   const { data } = await axios({
     url: api.attribute,
     method: 'POST',
@@ -47,6 +49,8 @@ export const reqAttributeList = async (typeId: number, parentId: number) => {
  * @returns
  */
 export const reqAttributeValueList = async (attribute_id: number, parentId: number, typeId: number) => {
+  if (typeof parentId === 'string') parentId = Number(parentId);
+
   const { data } = await axios({
     url: api.values,
     method: 'POST',

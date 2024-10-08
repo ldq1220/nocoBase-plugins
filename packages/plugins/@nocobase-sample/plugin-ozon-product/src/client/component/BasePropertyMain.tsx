@@ -34,12 +34,8 @@ export const BasePropertyMain: FC<Props> = observer(
 
     const handleOpenDrawer = () => {
       if (!typeValue) return messageApi.info('请选择商品类目');
-
-      const { id, parentId } = typeValue;
-      const startNum = Number(String(id).slice(0, 2));
-      const endNum = parentId % 100;
-
-      if (startNum != endNum) {
+      const ConreteCategory = hasConcreteCategory();
+      if (!ConreteCategory) {
         return messageApi.info('请选择具体商品类目');
       } else {
         setHasInit(true);
@@ -52,18 +48,29 @@ export const BasePropertyMain: FC<Props> = observer(
     };
 
     useEffect(() => {
-      if (!prevTypeValue && typeValue) {
-        setPrevTypeValue(typeValue); // 初始化 存储商品类目信息
+      if (typeValue) {
+        const ConreteCategory = hasConcreteCategory();
+        if (!prevTypeValue && ConreteCategory) {
+          setPrevTypeValue(typeValue); // 初始化 存储商品类目信息
+        }
       }
     }, [typeValue]);
 
-    useEffect(() => {
-      console.log('prevTypeValue--------', prevTypeValue);
-    }, [prevTypeValue]);
-
     // 对比商品类目是否发生变化
     const comparisonType = () => {
-      console.log('typeValue,prevTypeValue----', typeValue, prevTypeValue);
+      // console.log('typeValue,prevTypeValue----', typeValue, prevTypeValue);
+      if (typeValue.ozon_id != prevTypeValue.ozon_id) {
+        form.values[primaryProperty] = ''; // 清空基础属性
+      }
+    };
+
+    // 对比是否 为具体类目
+    const hasConcreteCategory = () => {
+      const { ozon_id, ozon_parent_id } = typeValue;
+      const startNum = Number(String(ozon_id).slice(0, 2));
+      const endNum = ozon_parent_id % 100;
+
+      return startNum === endNum;
     };
 
     return (

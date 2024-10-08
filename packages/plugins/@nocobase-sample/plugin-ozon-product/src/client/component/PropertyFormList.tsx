@@ -76,14 +76,14 @@ const PropertyFormList: React.FC<Props> = forwardRef(({ attributeList, disabled,
                   {item.dictionary_id != null && item.dictionary_id > 0 ? (
                     <Select
                       showSearch
-                      placeholder="请选择"
+                      placeholder={disabled ? '' : '请选择'}
                       optionFilterProp="label"
                       options={item.options}
                       style={{ maxWidth: '100%' }}
                       dropdownStyle={{ textOverflow: 'ellipsis', width: '100px' }}
                     />
                   ) : (
-                    <Input placeholder="请填写" allowClear />
+                    <Input placeholder={disabled ? '' : '请填写'} allowClear />
                   )}
                 </Form.Item>
               </Col>
