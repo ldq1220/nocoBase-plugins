@@ -11,6 +11,7 @@ import { ISchema, useFieldSchema } from '@formily/react';
 import _ from 'lodash';
 import { useCallback, useContext } from 'react';
 import { useLocationNoUpdate, useNavigateNoUpdate } from '../../../application';
+import { useTableBlockContext } from '../../../block-provider/TableBlockProvider';
 import {
   CollectionRecord,
   useAssociationName,
@@ -48,6 +49,8 @@ export interface PopupContextStorage extends PopupContext {
   /** used to refresh data for block */
   service?: any;
   sourceId?: string;
+  /** Specifically prepared for the 'Table selected records' variable */
+  tableBlockContext?: { field: any; service: any; rowKey: any; collection: string };
 }
 
 const popupsContextStorage: Record<string, PopupContextStorage> = {};
@@ -154,6 +157,7 @@ export const usePopupUtils = (
       (_parentRecordData || parentRecord?.data)?.[cm.getSourceKeyByAssociation(association)],
     [parentRecord, association],
   );
+  const tableBlockContext = useTableBlockContext();
 
   const setVisibleFromAction = options.setVisible || _setVisibleFromAction;
 
@@ -190,7 +194,7 @@ export const usePopupUtils = (
     [association, cm, collection, dataSourceKey, parentRecord?.data, association],
   );
 
-  const getPopupContext = useCallback(() => {
+  const getNewPopupContext = useCallback(() => {
     const context = {
       dataSource: dataSourceKey,
       collection: association ? undefined : collection.name,
@@ -245,9 +249,10 @@ export const usePopupUtils = (
         collection: collection.name,
         association,
         sourceId,
+        tableBlockContext,
       });
 
-      updatePopupContext(getPopupContext(), customActionSchema);
+      updatePopupContext(getNewPopupContext(), customActionSchema);
 
       navigate(withSearchParams(`${url}${pathname}`));
     },
@@ -265,7 +270,8 @@ export const usePopupUtils = (
       location,
       isPopupVisibleControlledByURL,
       getSourceId,
-      getPopupContext,
+      getNewPopupContext,
+      tableBlockContext,
     ],
   );
 
@@ -344,7 +350,7 @@ export const usePopupUtils = (
      * @deprecated
      * TODO: remove this
      */
-    getPopupContext,
+    getPopupContext: getNewPopupContext,
   };
 };
 

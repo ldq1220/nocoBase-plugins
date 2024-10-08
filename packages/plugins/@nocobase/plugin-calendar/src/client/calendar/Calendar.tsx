@@ -41,6 +41,7 @@ const localizer = dayjsLocalizer(dayjs);
 
 export const DeleteEventContext = React.createContext({
   close: () => {},
+  allowDeleteEvent: false,
 });
 
 function Toolbar(props: ToolbarProps) {
@@ -93,7 +94,7 @@ const useEvents = (dataSource: any, fieldNames: any, date: Date, view: (typeof W
 
       const push = (eventStart: Dayjs = start.clone()) => {
         // 必须在这个月的开始时间和结束时间，且在日程的开始时间之后
-        if (eventStart.isBefore(start) || !eventStart.isBetween(startDate, endDate)) {
+        if (eventStart.isBefore(start)) {
           return;
         }
 
@@ -107,7 +108,6 @@ const useEvents = (dataSource: any, fieldNames: any, date: Date, view: (typeof W
             return eventStart.isSame(d);
           }
         });
-
         if (res) return out;
         const title = getLabelFormatValue(labelUiSchema, get(item, fieldNames.title), true);
         const event = {
