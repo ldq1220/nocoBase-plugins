@@ -28,7 +28,7 @@ export const Config = {
   clientId: 2232122,
   apiKey: 'a6756ab9-47d2-40c8-8157-3d10fe5267ad',
   headers: {
-    'client-id': 2232122,
-    'api-Key': 'a6756ab9-47d2-40c8-8157-3d10fe5267ad',
+    'Client-id': 2232122,
+    'Api-Key': 'a6756ab9-47d2-40c8-8157-3d10fe5267ad',
   },
 };

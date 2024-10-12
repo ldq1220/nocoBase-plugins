@@ -8,8 +8,11 @@
  */
 
 import React, { useMemo, useImperativeHandle, forwardRef } from 'react';
-import { Form, Input, Row, Col, Select } from 'antd';
+import { Form, Input, Row, Col } from 'antd';
 import { debounce } from 'lodash';
+import SelectInput from './formInputs/SelectInput';
+import TextAreaInput from './formInputs/TextAreaInput';
+import SimpleInput from './formInputs/SimpleInput';
 
 interface Props {
   ref: any;
@@ -43,6 +46,41 @@ const PropertyFormList: React.FC<Props> = forwardRef(({ attributeList, disabled,
     validateFields: () => form.validateFields(),
   }));
 
+  const renderFormItem = (item) => (
+    <Row gutter={12} key={item.id}>
+      <Col span={24}>
+        <Form.Item
+          label={item.name}
+          tooltip={item.description}
+          name={[item.id, 'property_value']}
+          initialValue={item.property_value}
+          style={{ maxWidth: '100%' }}
+          rules={[
+            {
+              required: item.is_required,
+              message: getRequiredMessage(item),
+            },
+          ]}
+        >
+          {renderFormItemInput(item)}
+        </Form.Item>
+      </Col>
+    </Row>
+  );
+
+  const getRequiredMessage = (item: { dictionary_id: number; name: any }) =>
+    item.dictionary_id != null && item.dictionary_id > 0 ? `请选择【${item.name}】` : `请填写【${item.name}】`;
+
+  const renderFormItemInput = (item: { dictionary_id: number; type: string }) => {
+    if (item.dictionary_id != null && item.dictionary_id > 0) {
+      return <SelectInput item={item} disabled={disabled} />;
+    } else if (item.type === 'multiline') {
+      return <TextAreaInput disabled={disabled} />;
+    } else {
+      return <SimpleInput disabled={disabled} />;
+    }
+  };
+
   return (
     <Form
       form={form}
@@ -53,44 +91,7 @@ const PropertyFormList: React.FC<Props> = forwardRef(({ attributeList, disabled,
       style={{ width: '98%' }}
       disabled={disabled}
     >
-      <Form.List name="attributes">
-        {() =>
-          attributeList.map((item) => (
-            <Row gutter={12} key={item.id}>
-              <Col span={24}>
-                <Form.Item
-                  label={item.name}
-                  name={[item.id, 'property_value']}
-                  initialValue={item.property_value}
-                  style={{ maxWidth: '100%' }}
-                  rules={[
-                    {
-                      required: item.is_required,
-                      message:
-                        item.dictionary_id != null && item.dictionary_id > 0
-                          ? `请选择【${item.name}】`
-                          : `请填写【${item.name}】`,
-                    },
-                  ]}
-                >
-                  {item.dictionary_id != null && item.dictionary_id > 0 ? (
-                    <Select
-                      showSearch
-                      placeholder={disabled ? '' : '请选择'}
-                      optionFilterProp="label"
-                      options={item.options}
-                      style={{ maxWidth: '100%' }}
-                      dropdownStyle={{ textOverflow: 'ellipsis', width: '100px' }}
-                    />
-                  ) : (
-                    <Input placeholder={disabled ? '' : '请填写'} allowClear />
-                  )}
-                </Form.Item>
-              </Col>
-            </Row>
-          ))
-        }
-      </Form.List>
+      <Form.List name="attributes">{() => attributeList.map(renderFormItem)}</Form.List>
     </Form>
   );
 });

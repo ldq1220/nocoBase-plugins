@@ -17,7 +17,7 @@ export const getAttributeValueOptions = async (data: any, parentId: number, type
   const attributeList: any = await Promise.all(
     data.map(async (item: any, index: number) => {
       const { dictionary_id } = item;
-      const property_value = item.property_value ? item.property_value : '';
+      const property_value = item.property_value ? item.property_value : undefined;
       if (dictionary_id) {
         // 添加 100ms 延迟，避免频繁调用接口
         await sleep(50 * index); // 每个请求的延迟是上一个请求的 50ms 之后

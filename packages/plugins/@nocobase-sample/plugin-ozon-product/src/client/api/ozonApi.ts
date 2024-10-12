@@ -10,7 +10,7 @@
 import axios from 'axios';
 import { Config } from '../constants';
 
-const { api, headers, language } = Config;
+const { api, language, apiKey, clientId } = Config;
 
 // 获取类别特征列表
 /**
@@ -26,7 +26,10 @@ export const reqAttributeList = async (typeId: number, parentId: number) => {
   const { data } = await axios({
     url: api.attribute,
     method: 'POST',
-    headers: headers,
+    headers: {
+      'client-id': clientId,
+      'api-key': apiKey,
+    },
     data: {
       type_id: typeId,
       language: language.ZH,
@@ -54,7 +57,10 @@ export const reqAttributeValueList = async (attribute_id: number, parentId: numb
   const { data } = await axios({
     url: api.values,
     method: 'POST',
-    headers: headers,
+    headers: {
+      'client-id': clientId,
+      'api-key': apiKey,
+    },
     data: {
       attribute_id: attribute_id,
       description_category_id: parentId,
