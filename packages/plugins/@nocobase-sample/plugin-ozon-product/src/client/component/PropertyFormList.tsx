@@ -30,7 +30,9 @@ const PropertyFormList: React.FC<Props> = forwardRef(({ attributeList, disabled,
         const updatedList = attributeList.map((item) => {
           const newValue = allValues.attributes?.[item.id]?.property_value;
 
-          if (newValue !== undefined) {
+          if (newValue === undefined) {
+            return { ...item, property_value: null };
+          } else if (newValue !== item.property_value) {
             return { ...item, property_value: newValue };
           }
           return item;
@@ -57,7 +59,7 @@ const PropertyFormList: React.FC<Props> = forwardRef(({ attributeList, disabled,
           style={{ maxWidth: '100%' }}
           rules={[
             {
-              required: item.is_required,
+              required: item.is_required && item.name !== '品牌',
               message: getRequiredMessage(item),
             },
           ]}
