@@ -172,6 +172,7 @@ export class XlsxImporter extends EventEmitter {
             };
 
             if (column.dataIndex.length > 1) {
+              ctx.associationField = field;
               ctx.targetCollection = (field as IRelationField).targetCollection();
               ctx.filterKey = column.dataIndex[1];
             }
@@ -223,7 +224,7 @@ export class XlsxImporter extends EventEmitter {
 
   getData() {
     const firstSheet = this.firstSheet();
-    const rows = XLSX.utils.sheet_to_json(firstSheet, { header: 1, defval: null, raw: false });
+    const rows = XLSX.utils.sheet_to_json(firstSheet, { header: 1, defval: null });
 
     if (this.options.explain) {
       rows.shift();

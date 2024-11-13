@@ -11,18 +11,19 @@ import {
   Action,
   AdminProvider,
   AntdAppProvider,
+  AssociationFieldMode,
   AssociationFieldModeProvider,
   BlockTemplateProvider,
   GlobalThemeProvider,
   OpenModeProvider,
+  useAssociationFieldModeContext,
   usePlugin,
+  zIndexContext,
 } from '@nocobase/client';
 import React from 'react';
 import { isDesktop } from 'react-device-detect';
 
-import _ from 'lodash';
 import { ActionDrawerUsedInMobile, useToAdaptActionDrawerToMobile } from '../adaptor-of-desktop/ActionDrawer';
-import { BasicZIndexProvider } from '../adaptor-of-desktop/BasicZIndexProvider';
 import { useToAdaptFilterActionToMobile } from '../adaptor-of-desktop/FilterAction';
 import { InternalPopoverNesterUsedInMobile } from '../adaptor-of-desktop/InternalPopoverNester';
 import { MobileActionPage } from '../adaptor-of-desktop/mobile-action-page/MobileActionPage';
@@ -65,9 +66,11 @@ export const Mobile = () => {
   const DesktopComponent = mobilePlugin.desktopMode === false ? React.Fragment : DesktopMode;
   const modeToComponent = React.useMemo(() => {
     return {
-      PopoverNester: _.memoize((OriginComponent) => (props) => (
-        <InternalPopoverNesterUsedInMobile {...props} OriginComponent={OriginComponent} />
-      )),
+      PopoverNester: (props) => {
+        const { getDefaultComponent } = useAssociationFieldModeContext();
+        const OriginComponent = getDefaultComponent(AssociationFieldMode.PopoverNester);
+        return <InternalPopoverNesterUsedInMobile {...props} OriginComponent={OriginComponent} />;
+      },
     };
   }, []);
 
@@ -99,9 +102,9 @@ export const Mobile = () => {
                   <ResetSchemaOptionsProvider>
                     <AssociationFieldModeProvider modeToComponent={modeToComponent}>
                       {/* the z-index of all popups and subpages will be based on this value */}
-                      <BasicZIndexProvider basicZIndex={1000}>
+                      <zIndexContext.Provider value={100}>
                         <MobileRouter />
-                      </BasicZIndexProvider>
+                      </zIndexContext.Provider>
                     </AssociationFieldModeProvider>
                   </ResetSchemaOptionsProvider>
                 </MobileAppProvider>

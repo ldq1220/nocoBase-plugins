@@ -12,6 +12,7 @@ import { TemplateCreator } from '../services/template-creator';
 import { XlsxImporter } from '../services/xlsx-importer';
 import XLSX from 'xlsx';
 import * as process from 'node:process';
+import moment from 'moment';
 
 describe('xlsx importer', () => {
   let app: MockServer;
@@ -23,6 +24,68 @@ describe('xlsx importer', () => {
 
   afterEach(async () => {
     await app.destroy();
+  });
+
+  describe('import with date field', () => {
+    let User;
+
+    beforeEach(async () => {
+      User = app.db.collection({
+        name: 'users',
+        fields: [
+          {
+            type: 'string',
+            name: 'name',
+          },
+          {
+            type: 'date',
+            name: 'date',
+            interface: 'datetime',
+          },
+        ],
+      });
+
+      await app.db.sync();
+    });
+
+    it('should import with date', async () => {
+      const columns = [
+        {
+          dataIndex: ['name'],
+          defaultTitle: '姓名',
+        },
+        {
+          dataIndex: ['date'],
+          defaultTitle: '日期',
+        },
+      ];
+
+      const templateCreator = new TemplateCreator({
+        collection: User,
+        columns,
+      });
+
+      const template = await templateCreator.run();
+
+      const worksheet = template.Sheets[template.SheetNames[0]];
+
+      XLSX.utils.sheet_add_aoa(worksheet, [['test', 77383]], { origin: 'A2' });
+
+      const importer = new XlsxImporter({
+        collectionManager: app.mainDataSource.collectionManager,
+        collection: User,
+        columns,
+        workbook: template,
+      });
+
+      await importer.run();
+
+      expect(await User.repository.count()).toBe(1);
+
+      const user = await User.repository.findOne();
+
+      expect(moment(user.get('date')).format('YYYY-MM-DD')).toBe('2111-11-12');
+    });
   });
 
   describe('import with select fields', () => {
@@ -218,9 +281,156 @@ describe('xlsx importer', () => {
     });
   });
 
+  describe('import with belongs to association', async () => {
+    let Profile;
+    let User;
+
+    beforeEach(async () => {
+      Profile = app.db.collection({
+        name: 'profiles',
+        autoGenId: false,
+        fields: [
+          {
+            type: 'bigInt',
+            name: 'id',
+            primaryKey: true,
+            autoIncrement: true,
+          },
+          {
+            type: 'string',
+            name: 'name',
+          },
+          {
+            type: 'string',
+            name: 'userName',
+          },
+          {
+            type: 'belongsTo',
+            name: 'user',
+            target: 'users',
+            foreignKey: 'userName',
+            targetKey: 'name',
+          },
+        ],
+      });
+
+      User = app.db.collection({
+        name: 'users',
+        autoGenId: false,
+        fields: [
+          {
+            type: 'bigInt',
+            name: 'id',
+            primaryKey: true,
+            autoIncrement: true,
+          },
+          {
+            type: 'string',
+            name: 'name',
+            unique: true,
+          },
+        ],
+      });
+
+      await app.db.sync();
+
+      const user = await User.repository.create({
+        values: {
+          name: 'User1',
+        },
+      });
+    });
+
+    it('should import with foreignKey', async () => {
+      const columns = [
+        {
+          dataIndex: ['name'],
+          defaultTitle: '名称',
+        },
+        {
+          dataIndex: ['userName'],
+          defaultTitle: '用户名',
+        },
+      ];
+
+      const templateCreator = new TemplateCreator({
+        collection: Profile,
+        columns,
+      });
+
+      const template = await templateCreator.run();
+
+      const worksheet = template.Sheets[template.SheetNames[0]];
+
+      XLSX.utils.sheet_add_aoa(worksheet, [['test', 'User1']], {
+        origin: 'A2',
+      });
+
+      const importer = new XlsxImporter({
+        collectionManager: app.mainDataSource.collectionManager,
+        collection: Profile,
+        columns,
+        workbook: template,
+      });
+
+      await importer.run();
+
+      const profile = await Profile.repository.findOne({
+        appends: ['user'],
+      });
+
+      expect(profile.get('user').get('name')).toBe('User1');
+      expect(profile.get('name')).toBe('test');
+    });
+
+    it('should import with association field', async () => {
+      const columns = [
+        {
+          dataIndex: ['name'],
+          defaultTitle: '名称',
+        },
+        {
+          dataIndex: ['user', 'name'],
+          defaultTitle: '用户名',
+        },
+      ];
+
+      const templateCreator = new TemplateCreator({
+        collection: Profile,
+        columns,
+      });
+
+      const template = await templateCreator.run();
+
+      const worksheet = template.Sheets[template.SheetNames[0]];
+
+      XLSX.utils.sheet_add_aoa(worksheet, [['test', 'User1']], {
+        origin: 'A2',
+      });
+
+      const importer = new XlsxImporter({
+        collectionManager: app.mainDataSource.collectionManager,
+        collection: Profile,
+        columns,
+        workbook: template,
+      });
+
+      await importer.run();
+
+      const profile = await Profile.repository.findOne({
+        appends: ['user'],
+      });
+
+      expect(profile.get('user').get('name')).toBe('User1');
+      expect(profile.get('name')).toBe('test');
+    });
+  });
+
   describe('import with associations', () => {
     let User;
     let Post;
+    let Tag;
+
     beforeEach(async () => {
       User = app.db.collection({
         name: 'users',
@@ -252,10 +462,96 @@ describe('xlsx importer', () => {
             target: 'users',
             interface: 'm2o',
           },
+          {
+            type: 'belongsToMany',
+            name: 'tags',
+            target: 'tags',
+            interface: 'm2m',
+            through: 'postsTags',
+          },
+        ],
+      });
+
+      Tag = app.db.collection({
+        name: 'tags',
+        fields: [
+          {
+            type: 'string',
+            name: 'name',
+          },
+          {
+            type: 'belongsToMany',
+            name: 'posts',
+            target: 'posts',
+            interface: 'm2m',
+            through: 'postsTags',
+          },
         ],
       });
 
       await app.db.sync();
+    });
+
+    it('should import many to many with id', async () => {
+      await Tag.repository.create({
+        values: [
+          {
+            title: 't1',
+          },
+          {
+            title: 't2',
+          },
+        ],
+      });
+
+      const columns = [
+        {
+          dataIndex: ['title'],
+          defaultTitle: '名称',
+        },
+        {
+          dataIndex: ['tags', 'id'],
+          defaultTitle: 'IDS',
+        },
+      ];
+
+      const templateCreator = new TemplateCreator({
+        collection: Post,
+        columns,
+      });
+
+      const template = await templateCreator.run();
+
+      const worksheet = template.Sheets[template.SheetNames[0]];
+
+      XLSX.utils.sheet_add_aoa(
+        worksheet,
+        [
+          ['test', '1,2'],
+          ['test2', 1],
+        ],
+        {
+          origin: 'A2',
+        },
+      );
+
+      const importer = new XlsxImporter({
+        collectionManager: app.mainDataSource.collectionManager,
+        collection: Post,
+        columns,
+        workbook: template,
+      });
+
+      await importer.run();
+
+      const posts = await Post.repository.find({
+        appends: ['tags'],
+      });
+
+      expect(posts.length).toBe(2);
+
+      expect(posts[0]['tags'].map((item: any) => item.id)).toEqual([1, 2]);
+      expect(posts[1]['tags'].map((item: any) => item.id)).toEqual([1]);
     });
 
     it('should validate to many association', async () => {

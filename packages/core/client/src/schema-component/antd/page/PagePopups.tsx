@@ -123,7 +123,7 @@ const PagePopupsItemProvider: FC<{
 
       if (process.env.__E2E__) {
         setTimeout(() => {
-          closePopup(params.popupuid);
+          closePopup();
           // Deleting here ensures that the next time the same popup is opened, it will generate another random key.
           deleteRandomNestedSchemaKey(params.popupuid);
         });
@@ -132,7 +132,7 @@ const PagePopupsItemProvider: FC<{
 
       // Leave some time to refresh the block data
       setTimeout(() => {
-        closePopup(params.popupuid);
+        closePopup();
         // Deleting here ensures that the next time the same popup is opened, it will generate another random key.
         deleteRandomNestedSchemaKey(params.popupuid);
       }, 300);
@@ -232,9 +232,13 @@ export const PagePopups = (props: { paramsList?: PopupParams[] }) => {
 
   useEffect(() => {
     const run = async () => {
-      const waitList = popupParams.map(
-        (params) => getStoredPopupContext(params.popupuid)?.schema || requestSchema(params.popupuid),
-      );
+      const waitList = popupParams.map((params) => {
+        return (
+          getStoredPopupContext(params.popupuid)?.schema ||
+          findSchemaByUid(params.popupuid, fieldSchema?.root) ||
+          requestSchema(params.popupuid)
+        );
+      });
       const schemas = await Promise.all(waitList);
       const clonedSchemas = schemas.map((schema, index) => {
         if (_.isEmpty(schema)) {
@@ -244,7 +248,7 @@ export const PagePopups = (props: { paramsList?: PopupParams[] }) => {
         const params = popupParams[index];
 
         if (params.puid) {
-          const popupSchema = findSchemaByUid(params.puid, fieldSchema.root);
+          const popupSchema = findSchemaByUid(params.puid, fieldSchema?.root);
           if (popupSchema) {
             savePopupSchemaToSchema(_.omit(popupSchema, 'parent'), schema);
           }

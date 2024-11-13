@@ -82,7 +82,12 @@ const InternalRemoteSelect = connect(
 
     const operator = useMemo(() => {
       if (targetField?.interface) {
-        return getInterface(targetField.interface)?.filterable?.operators[0].value || '$includes';
+        const targetInterface = getInterface(targetField.interface);
+        const initialOperator = targetInterface?.filterable?.operators[0].value || '$includes';
+        if (targetField.type === 'string') {
+          return '$includes';
+        }
+        return initialOperator;
       }
       return '$includes';
     }, [targetField]);
