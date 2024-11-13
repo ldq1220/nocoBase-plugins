@@ -7,14 +7,14 @@
  * For more information, please refer to: https://www.nocobase.com/agreement.
  */
 
-import Handlebars from 'handlebars';
+import { dayjs, getPickerFormat, Handlebars } from '@nocobase/utils/client';
 import _, { every, findIndex, some } from 'lodash';
 import { replaceVariableValue } from '../../../block-provider/hooks';
 import { VariableOption, VariablesContextType } from '../../../variables/types';
 import { isVariable } from '../../../variables/utils/isVariable';
 import { transformVariableValue } from '../../../variables/utils/transformVariableValue';
+import { inferPickerType } from '../../antd/date-picker/util';
 import { getJsonLogic } from '../../common/utils/logic';
-
 type VariablesCtx = {
   /** 当前登录的用户 */
   $user?: Record<string, any>;
@@ -122,11 +122,20 @@ export const conditionAnalyses = async ({
       const jsonLogic = getJsonLogic();
       const [value, targetValue] = await Promise.all(parsingResult);
       const targetCollectionField = await variables.getCollectionField(targetVariableName, localVariables);
+      let currentInputValue = transformVariableValue(targetValue, { targetCollectionField });
+      const comparisonValue = transformVariableValue(value, { targetCollectionField });
+      if (
+        targetCollectionField?.type &&
+        ['datetime', 'date', 'datetimeNoTz', 'dateOnly', 'unixTimestamp'].includes(targetCollectionField.type) &&
+        currentInputValue
+      ) {
+        const picker = inferPickerType(comparisonValue);
+        const format = getPickerFormat(picker);
+        currentInputValue = dayjs(currentInputValue).format(format);
+      }
+
       return jsonLogic.apply({
-        [operator]: [
-          transformVariableValue(targetValue, { targetCollectionField }),
-          transformVariableValue(value, { targetCollectionField }),
-        ],
+        [operator]: [currentInputValue, comparisonValue],
       });
     } catch (error) {
       throw error;
@@ -165,12 +174,12 @@ export async function getRenderContent(templateEngine, content, variables, local
       const renderedContent = Handlebars.compile(content);
       // 处理渲染后的内容
       const data = getVariablesData(localVariables);
-      const { $nDate } = variables.ctxRef.current;
+      const { $nDate } = variables?.ctxRef?.current || {};
       const variableDate = {};
-      Object.keys($nDate).map((v) => {
+      Object.keys($nDate || {}).map((v) => {
         variableDate[v] = $nDate[v]();
       });
-      const html = renderedContent({ ...variables.ctxRef.current, ...data, $nDate: variableDate });
+      const html = renderedContent({ ...variables?.ctxRef?.current, ...data, $nDate: variableDate });
       return await defaultParse(html);
     } catch (error) {
       console.log(error);

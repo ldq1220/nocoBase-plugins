@@ -8,14 +8,14 @@
  */
 
 import { useField, useFieldSchema } from '@formily/react';
-import React, { useLayoutEffect } from 'react';
+import React, { useLayoutEffect, useMemo } from 'react';
 import {
+  CollectionFieldContext,
   SortableItem,
   useCollection_deprecated,
   useCollectionManager_deprecated,
   useCompile,
   useDesigner,
-  CollectionFieldContext,
   useFlag,
 } from '../../../';
 import { designerCss } from './Table.Column.ActionBar';
@@ -32,12 +32,39 @@ export const useColumnSchema = () => {
     }
     return buf;
   }, null);
+
   if (!fieldSchema) {
     return {};
   }
 
   const collectionField = getField(fieldSchema.name) || getCollectionJoinField(fieldSchema?.['x-collection-field']);
-  return { columnSchema, fieldSchema, collectionField, uiSchema: compile(collectionField?.uiSchema) };
+
+  return {
+    columnSchema,
+    fieldSchema,
+    collectionField,
+    uiSchema: compile(collectionField?.uiSchema),
+  };
+};
+
+export const useTableFieldInstanceList = () => {
+  const columnField = useField();
+  const { fieldSchema } = useColumnSchema();
+  const filedInstanceList = useMemo(() => {
+    if (!fieldSchema || !columnField) {
+      return [];
+    }
+
+    const path = columnField.path?.splice(columnField.path?.length - 1, 1);
+    // TODO: 这里需要优化，性能比较差，在 M2 pro 的机器上这行代码会运行将近 0.1 毫秒
+    return columnField.form.query(`${path.concat(`*.` + fieldSchema.name)}`).map();
+  }, [columnField, fieldSchema]);
+
+  if (!fieldSchema) {
+    return [];
+  }
+
+  return filedInstanceList;
 };
 
 export const TableColumnDecorator = (props) => {

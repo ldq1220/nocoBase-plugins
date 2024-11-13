@@ -110,7 +110,7 @@ const useParseDefaultValue = () => {
         });
 
         if (
-          collectionField.target &&
+          collectionField?.target &&
           collectionNameOfVariable &&
           collectionField.target !== collectionNameOfVariable &&
           !isInherit({

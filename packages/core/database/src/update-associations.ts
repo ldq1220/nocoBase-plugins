@@ -18,9 +18,10 @@ import {
   ModelStatic,
   Transactionable,
 } from 'sequelize';
-import Database from './database';
 import { Model } from './model';
 import { UpdateGuard } from './update-guard';
+import { TargetKey } from './repository';
+import Database from './database';
 
 function isUndefinedOrNull(value: any) {
   return typeof value === 'undefined' || value === null;
@@ -58,7 +59,7 @@ type UpdateValue = { [key: string]: any };
 
 interface UpdateOptions extends Transactionable {
   filter?: any;
-  filterByTk?: number | string;
+  filterByTk?: TargetKey;
   // 字段白名单
   whitelist?: string[];
   // 字段黑名单
@@ -448,12 +449,14 @@ export async function updateMultipleAssociation(
     } else if (item.sequelize) {
       setItems.push(item);
     } else if (typeof item === 'object') {
-      const targetKey = (association as any).targetKey || 'id';
+      // @ts-ignore
+      const targetKey = (association as any).targetKey || association.options.targetKey || 'id';
 
       if (item[targetKey]) {
         const attributes = {
           [targetKey]: item[targetKey],
         };
+
         const instance = association.target.build(attributes, { isNewRecord: false });
         setItems.push(instance);
       }
@@ -466,16 +469,19 @@ export async function updateMultipleAssociation(
   await model[setAccessor](setItems, { transaction, context, individualHooks: true });
 
   const newItems = [];
+
   const pk = association.target.primaryKeyAttribute;
-  const tmpKey = association['options']?.['targetKey'];
   let targetKey = pk;
   const db = model.constructor['database'] as Database;
+
+  const tmpKey = association['options']?.['targetKey'];
   if (tmpKey !== pk) {
     const targetKeyFieldOptions = db.getFieldByPath(`${association.target.name}.${tmpKey}`)?.options;
     if (targetKeyFieldOptions?.unique) {
       targetKey = tmpKey;
     }
   }
+
   for (const item of objectItems) {
     const through = (<any>association).through ? (<any>association).through.model.name : null;
 
@@ -548,7 +554,10 @@ export async function updateMultipleAssociation(
   }
 
   for (const newItem of newItems) {
-    const existIndexInSetItems = setItems.findIndex((setItem) => setItem[targetKey] === newItem[targetKey]);
+    // @ts-ignore
+    const findTargetKey = (association as any).targetKey || association.options.targetKey || targetKey;
+
+    const existIndexInSetItems = setItems.findIndex((setItem) => setItem[findTargetKey] === newItem[findTargetKey]);
 
     if (existIndexInSetItems !== -1) {
       setItems[existIndexInSetItems] = newItem;

@@ -34,6 +34,7 @@ import { SchemaSettingsSortingRule } from '../../../../schema-settings/SchemaSet
 import { useIsShowMultipleSwitch } from '../../../../schema-settings/hooks/useIsShowMultipleSwitch';
 import { useLocalVariables, useVariables } from '../../../../variables';
 import { useOpenModeContext } from '../../../popup/OpenModeProvider';
+import { useDataBlockProps } from '../../../../data-source';
 
 const enableLink = {
   name: 'enableLink',
@@ -72,7 +73,7 @@ const enableLink = {
   },
 };
 
-const titleField: any = {
+export const titleField: any = {
   name: 'titleField',
   type: 'select',
   useComponentProps() {
@@ -357,7 +358,8 @@ export const selectComponentFieldSettings = new SchemaSettings({
         const isAssociationField = useIsAssociationField();
         const readPretty = useIsFieldReadPretty();
         const { fieldSchema } = useColumnSchema();
-        return isAssociationField && !fieldSchema && !readPretty;
+        const { type } = useDataBlockProps() || ({} as any);
+        return isAssociationField && !fieldSchema && !readPretty && type !== 'publicForm';
       },
     },
     {

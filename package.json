@@ -64,9 +64,7 @@
     "*.{js,json}": [
       "prettier --write"
     ],
-    "*.ts?(x)": [
-      "eslint --fix"
-    ]
+    "*.ts?(x)": []
   },
   "devDependencies": {
     "@commitlint/cli": "^16.1.0",
