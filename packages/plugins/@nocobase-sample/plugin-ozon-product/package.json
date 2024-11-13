@@ -4,7 +4,7 @@
   "main": "dist/server/index.js",
   "dependencies": {},
   "displayName": "Set the basic properties of the product",
-  "displayName.zh-CN": "设置商品基本属性",
+  "displayName.zh-CN": "设置商品基本属性(Ozon)",
   "description": "Query parameters and set basic properties by product category.",
   "description.zh-CN": "通过商品类目，查询参数，设置基础属性。",
   "peerDependencies": {
