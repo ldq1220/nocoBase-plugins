@@ -1,6 +1,6 @@
 {
   "name": "@nocobase-sample/plugin-ozon-product",
-  "version": "1.3.29-beta",
+  "version": "1.4.0-alpha",
   "main": "dist/server/index.js",
   "dependencies": {},
   "displayName": "Set the basic properties of the product",
