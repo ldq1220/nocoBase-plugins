@@ -20,6 +20,15 @@ interface Props {
   disabled?: boolean;
   onAttributeListChange: (newList: any[]) => void;
 }
+interface FormItem {
+  dictionary_id: number | null;
+  type: string;
+  id: string | number;
+  name: string;
+  property_value: any;
+  description: string;
+  is_required: boolean;
+}
 
 const PropertyFormList: React.FC<Props> = forwardRef(({ attributeList, disabled, onAttributeListChange }, ref) => {
   const [form] = Form.useForm();
@@ -27,7 +36,7 @@ const PropertyFormList: React.FC<Props> = forwardRef(({ attributeList, disabled,
   const debouncedOnValuesChange = useMemo(
     () =>
       debounce((changedValues, allValues) => {
-        const updatedList = attributeList.map((item) => {
+        const updatedList = attributeList.map((item: FormItem) => {
           const newValue = allValues.attributes?.[item.id]?.property_value;
 
           if (newValue === undefined) {
@@ -48,7 +57,7 @@ const PropertyFormList: React.FC<Props> = forwardRef(({ attributeList, disabled,
     validateFields: () => form.validateFields(),
   }));
 
-  const renderFormItem = (item) => (
+  const renderFormItem = (item: FormItem) => (
     <Row gutter={12} key={item.id}>
       <Col span={24}>
         <Form.Item
@@ -73,13 +82,14 @@ const PropertyFormList: React.FC<Props> = forwardRef(({ attributeList, disabled,
   const getRequiredMessage = (item: { dictionary_id: number; name: any }) =>
     item.dictionary_id != null && item.dictionary_id > 0 ? `请选择【${item.name}】` : `请填写【${item.name}】`;
 
-  const renderFormItemInput = (item: { dictionary_id: number; type: string }) => {
-    if (item.dictionary_id != null && item.dictionary_id > 0) {
-      return <SelectInput item={item} disabled={disabled} />;
-    } else if (item.type === 'multiline') {
-      return <TextAreaInput disabled={disabled} />;
-    } else {
-      return <SimpleInput disabled={disabled} />;
+  const renderFormItemInput = (item: FormItem) => {
+    switch (true) {
+      case item.dictionary_id != null && item.dictionary_id > 0:
+        return <SelectInput item={item} disabled={disabled} />;
+      case item.type === 'multiline':
+        return <TextAreaInput disabled={disabled} />;
+      default:
+        return <SimpleInput disabled={disabled} />;
     }
   };
 
