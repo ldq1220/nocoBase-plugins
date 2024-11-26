@@ -44,17 +44,6 @@ const CompanyDetailsSchemaInitializer = () => {
         insert(getCompanyDetailsSchema(ApiKey));
       }}
       schema={{
-        // CompanyField: {
-        //   type: 'string',
-        //   title: t('Bind field'),
-        //   required: true,
-        //   'x-component': 'Select',
-        //   'x-decorator': 'FormItem',
-        //   'x-component-props': {
-        //     placeholder: t('Please select a field'),
-        //   },
-        //   enum: options,
-        // },
         ApiKey: {
           type: 'string',
           title: 'Api Key',
