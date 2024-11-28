@@ -1,0 +1,15 @@
+{
+  "name": "@gemel/plugin-inquiry-record-detail",
+  "version": "1.4.0-alpha",
+  "main": "dist/server/index.js",
+  "displayName": "Inquiry Record Details",
+  "displayName.zh-CN": "询料记录详情",
+  "description": "View the details of the inquiry record. And custom interaction processing",
+  "description.zh-CN": "查看询料记录详情。并进行自定义交互处理。",
+  "dependencies": {},
+  "peerDependencies": {
+    "@nocobase/client": "1.x",
+    "@nocobase/server": "1.x",
+    "@nocobase/test": "1.x"
+  }
+}
