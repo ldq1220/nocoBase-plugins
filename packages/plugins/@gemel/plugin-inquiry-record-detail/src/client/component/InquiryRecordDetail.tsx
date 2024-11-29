@@ -8,9 +8,12 @@
  */
 
 import { observer, useForm } from '@formily/react';
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import { FieldComponentName } from '../constants';
-import { useRequest } from '@nocobase/client';
+import { InquiryRecordProvider, useInquiryRecord } from '../context/InquiryRecordContext';
+import { Spin, Divider } from 'antd';
+import InquiryRecordView from './InquiryRecordView';
+import MaterialInquiryView from './MaterialInquiryView';
 
 export interface InquiryRecordDetailProps {
   InquiryRecordId?: number | string;
@@ -20,41 +23,29 @@ export const InquiryRecordDetail: FC<InquiryRecordDetailProps> = observer(
   ({ InquiryRecordId }) => {
     const form = useForm();
     const inquiryRecordId = form.values[InquiryRecordId];
-    const [pageSize, setPageSize] = useState(1);
 
-    console.log('InquiryRecordDetail', InquiryRecordId);
-    console.log('useForm', useForm(), form.values, InquiryRecordId, inquiryRecordId);
-
-    const { data: inquiryRecordData } = useRequest<{
-      data: any;
-    }>(
-      {
-        url: `inquiry_records:get?filter[id]=${inquiryRecordId}&appends=inquiry_materials`,
-        method: 'get',
-      },
-      {
-        ready: !!inquiryRecordId,
-        debounceWait: 300,
-      },
+    return (
+      <InquiryRecordProvider inquiryRecordId={inquiryRecordId}>
+        <InquiryRecordContent />
+      </InquiryRecordProvider>
     );
-
-    const { data: inquiryMaterialsData } = useRequest<{
-      data: any;
-    }>(
-      {
-        url: `inquiry_records/${inquiryRecordId}/inquiry_materials:list?pageSize=${pageSize}&appends[]=suppliers&appends[]=supplier_inquiry_records&appends[]=supplier_inquiry_records.inquiry_material&appends[]=supplier_inquiry_records.supplier`,
-        method: 'get',
-      },
-      {
-        ready: !!inquiryRecordId,
-        debounceWait: 300,
-      },
-    );
-
-    console.log('inquiryRecordData', inquiryRecordData);
-    console.log('inquiryMaterialsData', inquiryMaterialsData);
-
-    return <div>InquiryRecordDetail {InquiryRecordId} </div>;
   },
   { displayName: FieldComponentName },
 );
+
+// 创建一个子组件来使用共享的数据
+const InquiryRecordContent: FC = () => {
+  const { loading } = useInquiryRecord();
+
+  if (loading) {
+    return <Spin spinning={loading} />;
+  }
+
+  return (
+    <div>
+      <InquiryRecordView />
+      <Divider>物料询价记录</Divider>
+      <MaterialInquiryView />
+    </div>
+  );
+};
