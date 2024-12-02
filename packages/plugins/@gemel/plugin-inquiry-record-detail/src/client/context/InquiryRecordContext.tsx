@@ -26,18 +26,27 @@ export const InquiryRecordProvider: FC<{
   const [isLoading, setIsLoading] = useState(true);
   const [selectedRecords, setSelectedRecords] = useState<Record<string, any>>({});
 
+  // 设置选中的记录
   const setSelectedRecord = (tabKey: string, record: any) => {
     setSelectedRecords((prev) => {
       if (record === null) {
-        // 如果要清除选中,则删除该tab的记录
         const { [tabKey]: _, ...rest } = prev;
         return rest;
       }
-      // 保留其他tab的记录,只更新当前tab
-      return {
+
+      const newRecords = {
         ...prev,
         [tabKey]: record,
       };
+
+      // 按照记录的id进行排序
+      const sortedEntries = Object.entries(newRecords).sort((a, b) => {
+        const idA = a[1]?.quiry_material_id ?? 0;
+        const idB = b[1]?.quiry_material_id ?? 0;
+        return idA - idB;
+      });
+
+      return Object.fromEntries(sortedEntries);
     });
   };
 
@@ -170,9 +179,16 @@ export const InquiryRecordProvider: FC<{
           id: 13,
           store_status: '满足',
           chat_messages: [
+            { speakerRole: 'human', content: '哈喽' },
+            { speakerRole: 'ai', content: '您好呀！有什么可以帮助您的吗？嘻嘻~' },
             {
-              q: '你好',
-              a: '我不好',
+              speakerRole: 'human',
+              content: '我需要 0603 10k 5% 的物料，请报价。 湘江的钽电容，10U/25V.B型请报价 1210 1% 3.3R 1/2W',
+            },
+            {
+              speakerRole: 'ai',
+              content:
+                '好的，我来为您查询一下库存和价格。\n\n1. 0603 10k 5% 电阻：\n- 库存：5000个\n- 价格：0.05美元/个\n\n2. 湘江的钽电容，10U/25V.B型：\n- 库存：2000个\n- 价格：0.2美元/个\n\n3. 1210 1% 3.3R 1/2W 电阻：\n- 库存：3000个\n- 价格：0.08美元/个\n\n请问您需要订购以上物料吗？',
             },
           ],
           inquiry_status: '2',
@@ -206,9 +222,8 @@ export const InquiryRecordProvider: FC<{
           id: 14,
           store_status: null,
           chat_messages: [
-            {
-              q: '你好',
-            },
+            { speakerRole: 'human', content: '哈喽' },
+            { speakerRole: 'ai', content: '您好呀！有什么可以帮助您的吗？嘻嘻~' },
           ],
           inquiry_status: '1',
           createdById: 1,
@@ -361,10 +376,8 @@ export const InquiryRecordProvider: FC<{
           id: 16,
           store_status: '不满足',
           chat_messages: [
-            {
-              q: '在不在',
-              a: '不在，你们公司被我们拉黑了',
-            },
+            { speakerRole: 'human', content: '哈喽' },
+            { speakerRole: 'ai', content: '您好呀！有什么可以帮助您的吗？嘻嘻~' },
           ],
           inquiry_status: '2',
           createdById: 1,
@@ -397,15 +410,13 @@ export const InquiryRecordProvider: FC<{
           id: 18,
           store_status: '满足',
           chat_messages: [
-            {
-              q: 'MM74HC4050N 多少钱',
-              a: '9.20 有现货',
-            },
+            { speakerRole: 'human', content: '哈喽' },
+            { speakerRole: 'ai', content: '您好呀！有什么可以帮助您的吗？嘻嘻~' },
           ],
           inquiry_status: '2',
           createdById: 1,
           updatedById: 1,
-          has_adopt: '1',
+          has_adopt: '0',
           supplier: {
             createdAt: '2024-11-26T11:42:01.279Z',
             updatedAt: '2024-11-27T02:20:44.875Z',
@@ -421,6 +432,81 @@ export const InquiryRecordProvider: FC<{
             company_name: '深圳市新易天电子',
             company_ids: ['1', '4'],
             createdById: 5,
+            updatedById: 7,
+          },
+        },
+      ],
+    },
+    {
+      createdAt: '2024-11-26T10:49:33.651Z',
+      updatedAt: '2024-11-26T11:40:37.129Z',
+      id: 48,
+      material_code: 'BAV74LT1G',
+      inquiry_material_status: '2',
+      createdById: 1,
+      updatedById: 1,
+      inquiry_record_id: 48,
+      gather_error: null,
+      suppliers: [
+        {
+          createdAt: '2024-11-20T11:50:57.390Z',
+          updatedAt: '2024-11-27T02:16:17.759Z',
+          id: 93,
+          qq_account: ['800875998'],
+          member_years: '13',
+          phones: ['0755-82724810 圣禾堂'],
+          mobiles: '19925288932',
+          faxes: '',
+          location: '深圳市  龙岗区',
+          addresses: '深圳市龙岗区坂田街道新天下工业城百瑞达大厦A座3楼',
+          company_tag: ['iccp'],
+          company_name: '圣禾堂（深圳）电子科技有限公司',
+          company_ids: ['1', '2', '4'],
+          createdById: null,
+          updatedById: 7,
+          inquiry_materials_suppliers: {
+            createdAt: '2024-11-26T11:40:37.588Z',
+            updatedAt: '2024-11-26T11:40:37.588Z',
+            inquiry_material_id: 45,
+            supplier_name: '圣禾堂（深圳）电子科技有限公司',
+          },
+        },
+      ],
+      supplier_inquiry_records: [
+        {
+          createdAt: '2024-11-29T01:47:37.092Z',
+          updatedAt: '2024-11-29T07:28:44.465Z',
+          supplier_id: 93,
+          quiry_material_id: 48,
+          price: 20.8,
+          id: 19,
+          store_status: '满足',
+          chat_messages: [
+            { speakerRole: 'ai', content: 'BAV74LT1G' },
+            {
+              speakerRole: 'human',
+              content: 'BAV74LT1G  20.1  24++',
+            },
+          ],
+          inquiry_status: '2',
+          createdById: 1,
+          updatedById: 1,
+          has_adopt: '0',
+          supplier: {
+            createdAt: '2024-11-20T11:50:57.390Z',
+            updatedAt: '2024-11-27T02:16:17.759Z',
+            id: 93,
+            qq_account: ['800875998'],
+            member_years: '13',
+            phones: ['0755-82724810 圣禾堂'],
+            mobiles: '19925288932',
+            faxes: '',
+            location: '深圳市  龙岗区',
+            addresses: '深圳市龙岗区坂田街道新天下工业城百瑞达大厦A座3楼',
+            company_tag: ['iccp'],
+            company_name: '圣禾堂（深圳）电子科技有限公司',
+            company_ids: ['1', '2', '4'],
+            createdById: null,
             updatedById: 7,
           },
         },
@@ -447,7 +533,7 @@ export const InquiryRecordProvider: FC<{
 export const useInquiryRecord = () => {
   const context = useContext(InquiryRecordContext);
   if (context === undefined) {
-    throw new Error('useInquiryRecord must be used within a InquiryRecordProvider');
+    throw new Error('useInquiryRecord must be used within human InquiryRecordProvider');
   }
   return context;
 };

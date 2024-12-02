@@ -7,12 +7,14 @@
  * For more information, please refer to: https://www.nocobase.com/agreement.
  */
 
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import { useInquiryRecord } from '../context/InquiryRecordContext';
-import { Table, Tag, Divider } from 'antd';
+import { Table, Tag, Divider, Popover } from 'antd';
 import { supplierInquiryRecordStatusMap } from '../utils';
 import type { TableProps } from 'antd';
 import ReplyCustomer from './ReplyCustomer';
+import ChatMessages from './ChatMessage';
+import chatMessagesIcon from '../assets/svg/chatMessages.svg';
 
 const SupplierInquiryRecordTable: FC<{ dataSource: any[]; tabKey: string }> = ({ dataSource, tabKey }) => {
   const { loading, selectedRecords, setSelectedRecord } = useInquiryRecord();
@@ -26,7 +28,7 @@ const SupplierInquiryRecordTable: FC<{ dataSource: any[]; tabKey: string }> = ({
   };
 
   // 表格列配置
-  const columns = [
+  const columns: any = [
     {
       title: '供应商',
       render: (_, record) => {
@@ -42,23 +44,32 @@ const SupplierInquiryRecordTable: FC<{ dataSource: any[]; tabKey: string }> = ({
     },
     {
       title: '价格',
+      align: 'center',
       render: (_, record) => {
         return <span>{record.price}</span>;
       },
     },
     {
       title: '库存状况',
+      align: 'center',
       render: (_, record) => {
         return <span>{record.store_status}</span>;
       },
     },
     {
       title: '聊天记录',
+      align: 'center',
       render: (_, record) => {
-        return <span>{JSON.stringify(record.chat_messages)}</span>;
+        return (
+          <Popover content={<ChatMessages messages={record.chat_messages || []} />} trigger="hover" placement="left">
+            {/* <a>查看聊天记录</a> */}
+            <img src={chatMessagesIcon} alt="查看聊天记录" style={{ cursor: 'pointer' }} />
+          </Popover>
+        );
       },
     },
   ];
+
   return (
     <div style={{ marginTop: 16 }}>
       <Table

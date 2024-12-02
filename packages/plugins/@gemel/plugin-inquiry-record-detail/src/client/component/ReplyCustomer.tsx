@@ -8,12 +8,13 @@
  */
 
 import React, { FC, useState, useEffect, useRef } from 'react';
-import { Input, Button, Modal, Flex } from 'antd';
+import { Input, Button, Modal, Flex, message } from 'antd';
 import { useInquiryRecord } from '../context/InquiryRecordContext';
 
 const { TextArea } = Input;
 
 const ReplyCustomer: FC = () => {
+  const [messageApi, contextHolder] = message.useMessage();
   const { inquiryMaterialsData, selectedRecords, setSelectedRecord } = useInquiryRecord();
   const [replyContent, setReplyContent] = useState('');
   const initialized = useRef(false);
@@ -30,18 +31,20 @@ const ReplyCustomer: FC = () => {
       });
       initialized.current = true;
     }
-  }, [inquiryMaterialsData]);
+  }, [inquiryMaterialsData, setSelectedRecord]);
 
-  // 根据选中记录生成回复内容
-  useEffect(() => {
+  const handleGenerateContent = () => {
+    if (Object.keys(selectedRecords).length <= 0) return messageApi.error('请先选择参考数据');
+
     const content = Object.entries(selectedRecords)
       .map(([tabKey, record]) => {
         return `物料: ${tabKey} -- 价格: ${record.price || '暂无'} 库存状况: ${record.store_status || '暂无'}`;
       })
       .join('\n');
 
-    setReplyContent(content);
-  }, [selectedRecords]);
+    setReplyContent((prev) => (prev ? `${prev}\n\n${content}` : content));
+    messageApi.success('回复文案已生成，请检查关键信息。');
+  };
 
   const handleReply = () => {
     Modal.confirm({
@@ -56,13 +59,17 @@ const ReplyCustomer: FC = () => {
 
   return (
     <Flex vertical gap="middle" style={{ padding: '16px' }}>
+      {contextHolder}
       <TextArea
         value={replyContent}
         onChange={(e) => setReplyContent(e.target.value)}
         placeholder="请输入回复内容..."
         rows={6}
       />
-      <Flex justify="flex-end">
+      <Flex justify="flex-end" gap="20px">
+        <Button type="default" onClick={handleGenerateContent}>
+          生成文案
+        </Button>
         <Button type="primary" onClick={handleReply}>
           回复客户
         </Button>
