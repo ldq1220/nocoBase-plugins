@@ -9,12 +9,11 @@
 
 import React, { FC } from 'react';
 import { useInquiryRecord } from '../context/InquiryRecordContext';
-import { Table, Tag, Divider, Popover } from 'antd';
+import { Table, Tag, Popover } from 'antd';
 import { supplierInquiryRecordStatusMap } from '../utils';
 import type { TableProps } from 'antd';
-import ReplyCustomer from './ReplyCustomer';
 import ChatMessages from './ChatMessage';
-import chatMessagesIcon from '../assets/svg/chatMessages.svg';
+import ChatMessagesIcon from '../assets/svg/chatMessages';
 
 const SupplierInquiryRecordTable: FC<{ dataSource: any[]; tabKey: string }> = ({ dataSource, tabKey }) => {
   const { loading, selectedRecords, setSelectedRecord } = useInquiryRecord();
@@ -31,15 +30,17 @@ const SupplierInquiryRecordTable: FC<{ dataSource: any[]; tabKey: string }> = ({
   const columns: any = [
     {
       title: '供应商',
+      align: 'center',
       render: (_, record) => {
         return <span>{record.supplier.company_name}</span>;
       },
     },
     {
       title: '询问状态',
+      align: 'center',
       render: (_, record) => {
         const tag = supplierInquiryRecordStatusMap(record.inquiry_status);
-        return <Tag color={tag.color}>{tag.label}</Tag>;
+        return <Tag color={tag?.color}>{tag?.label}</Tag>;
       },
     },
     {
@@ -50,10 +51,24 @@ const SupplierInquiryRecordTable: FC<{ dataSource: any[]; tabKey: string }> = ({
       },
     },
     {
+      title: '是否含税',
+      align: 'center',
+      render: (_, record) => {
+        return <span>{record.has_tax_included === 'true' ? '含税' : '未税'}</span>;
+      },
+    },
+    {
       title: '库存状况',
       align: 'center',
       render: (_, record) => {
         return <span>{record.store_status}</span>;
+      },
+    },
+    {
+      title: '备注',
+      align: 'center',
+      render: (_, record) => {
+        return <span>{record.remark}</span>;
       },
     },
     {
@@ -62,8 +77,9 @@ const SupplierInquiryRecordTable: FC<{ dataSource: any[]; tabKey: string }> = ({
       render: (_, record) => {
         return (
           <Popover content={<ChatMessages messages={record.chat_messages || []} />} trigger="hover" placement="left">
-            {/* <a>查看聊天记录</a> */}
-            <img src={chatMessagesIcon} alt="查看聊天记录" style={{ cursor: 'pointer' }} />
+            <span style={{ cursor: 'pointer' }}>
+              <ChatMessagesIcon />
+            </span>
           </Popover>
         );
       },
@@ -83,8 +99,6 @@ const SupplierInquiryRecordTable: FC<{ dataSource: any[]; tabKey: string }> = ({
         loading={loading}
         scroll={{ y: 275 }}
       />
-      <Divider>回复客户</Divider>
-      <ReplyCustomer />
     </div>
   );
 };

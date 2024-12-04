@@ -9,7 +9,7 @@
 
 import React from 'react';
 import { Avatar } from 'antd';
-import styles from '../assets/css/chatMessage.css';
+import '../assets/css/chatMessage.css';
 import classNames from 'classnames';
 
 interface ChatMessage {
@@ -30,22 +30,22 @@ const ChatMessages: React.FC<{ messages: ChatMessage[] }> = ({ messages }) => {
   };
 
   return (
-    <div className={styles.chatContainer}>
+    <div className="chatContainer">
       {messages.map((message, index) => {
-        const isHuman = message.speakerRole === 'human';
+        const isAi = message.speakerRole === 'ai';
 
         return (
-          <div key={index} className={classNames(styles.messageItem, isHuman && styles.messageItemSender)}>
+          <div key={index} className={classNames('messageItem', isAi && 'messageItemSender')}>
             <Avatar
-              className={styles.avatar}
+              className="avatar"
               size="small"
               style={{
-                backgroundColor: isHuman ? '#1890ff' : '#87d068',
+                backgroundColor: isAi ? '#1890ff' : '#87d068',
               }}
             >
-              {isHuman ? 'AI' : 'U'}
+              {isAi ? 'AI' : 'U'}
             </Avatar>
-            <div className={classNames(styles.messageContent, isHuman && styles.messageContentSender)}>
+            <div className={classNames('messageContent', isAi && 'messageContentSender')}>
               {formatContent(message.content)}
             </div>
           </div>

@@ -10,19 +10,41 @@
 import React, { FC } from 'react';
 import { useInquiryRecord } from '../context/InquiryRecordContext';
 import SupplierInquiryRecordTable from './SupplierInquiryRecordTable';
-import { Tabs } from 'antd';
+import { Tabs, Tag, Space, Typography } from 'antd';
+import { inquiryRecordMaterialMap } from '../utils/inquiryRecordSatatus';
 
 const MaterialInquiryView: FC = () => {
   const { inquiryMaterialsData } = useInquiryRecord();
-  console.log('inquiryMaterialsData', inquiryMaterialsData);
-
   if (!inquiryMaterialsData) return null;
 
   return (
     <div style={{ marginTop: 16 }}>
       <Tabs type="card">
-        {inquiryMaterialsData.map((material, index) => (
+        {inquiryMaterialsData.map((material: any) => (
           <Tabs.TabPane key={material.material_code} tab={material.material_code}>
+            <Space size={28} wrap style={{ padding: '0 20px' }}>
+              <Space>
+                <Typography.Text type="secondary">状态:</Typography.Text>
+                <Tag color={inquiryRecordMaterialMap(material.inquiry_material_status)?.color}>
+                  {inquiryRecordMaterialMap(material.inquiry_material_status)?.label}
+                </Tag>
+              </Space>
+              {material.gather_error && (
+                <Space>
+                  <Typography.Text type="secondary">采集失败原因:</Typography.Text>
+                  <Typography.Text>{material.gather_error}</Typography.Text>
+                </Space>
+              )}
+              <Space>
+                <Typography.Text type="secondary">需求数量:</Typography.Text>
+                <Typography.Text>{material.quantity}</Typography.Text>
+              </Space>
+              <Space>
+                <Typography.Text type="secondary">需求品牌:</Typography.Text>
+                <Typography.Text>{material.manufacturer}</Typography.Text>
+              </Space>
+            </Space>
+
             <SupplierInquiryRecordTable
               dataSource={material.supplier_inquiry_records}
               tabKey={material.material_code}

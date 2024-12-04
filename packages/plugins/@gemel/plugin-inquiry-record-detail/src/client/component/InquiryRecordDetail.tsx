@@ -14,6 +14,7 @@ import { InquiryRecordProvider, useInquiryRecord } from '../context/InquiryRecor
 import { Spin, Divider } from 'antd';
 import InquiryRecordView from './InquiryRecordView';
 import MaterialInquiryView from './MaterialInquiryView';
+import ReplyCustomer from './ReplyCustomer';
 
 export interface InquiryRecordDetailProps {
   InquiryRecordId?: number | string;
@@ -33,19 +34,17 @@ export const InquiryRecordDetail: FC<InquiryRecordDetailProps> = observer(
   { displayName: FieldComponentName },
 );
 
-// 创建一个子组件来使用共享的数据
 const InquiryRecordContent: FC = () => {
   const { loading } = useInquiryRecord();
-
-  if (loading) {
-    return <Spin spinning={loading} />;
-  }
+  if (loading) return <Spin spinning={loading} />;
 
   return (
-    <div>
+    <>
       <InquiryRecordView />
       <Divider>物料询价记录</Divider>
       <MaterialInquiryView />
-    </div>
+      <Divider>回复客户</Divider>
+      <ReplyCustomer />
+    </>
   );
 };

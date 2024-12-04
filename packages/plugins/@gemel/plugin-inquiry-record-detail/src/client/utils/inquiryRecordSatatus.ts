@@ -9,11 +9,22 @@
 
 export const inquiryRecordMap = (status: string) => {
   const map = {
-    '0': { label: '待采集', color: 'orange' },
-    '1': { label: '采集失败', color: 'blue' },
-    '2': { label: '待询价', color: 'green' },
-    '3': { label: '待回复', color: 'red' },
-    '4': { label: '已回复', color: 'default' },
+    '0': { label: '待采集', color: 'lime' },
+    '1': { label: '待询价', color: 'magenta' },
+    '2': { label: '询价中', color: 'blue' },
+    '3': { label: '待回复', color: 'gold' },
+    '4': { label: '已回复', color: 'purple' },
+  };
+  return map[status];
+};
+
+export const inquiryRecordMaterialMap = (status: string) => {
+  const map = {
+    '0': { label: '待采集', color: 'lime' },
+    '1': { label: '采集失败', color: 'red' },
+    '2': { label: '待询价', color: 'magenta' },
+    '3': { label: '询价中', color: 'blue' },
+    '4': { label: '已回复', color: 'purple' },
   };
   return map[status];
 };

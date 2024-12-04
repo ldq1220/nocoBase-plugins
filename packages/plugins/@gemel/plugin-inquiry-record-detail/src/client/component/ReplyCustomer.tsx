@@ -24,9 +24,7 @@ const ReplyCustomer: FC = () => {
     if (inquiryMaterialsData && !initialized.current) {
       inquiryMaterialsData.forEach((material) => {
         material.supplier_inquiry_records?.forEach((record) => {
-          if (record.has_adopt == '1') {
-            setSelectedRecord(String(material.material_code), record);
-          }
+          if (record.has_adopt == '1') setSelectedRecord(String(material.material_code), record);
         });
       });
       initialized.current = true;
@@ -47,6 +45,8 @@ const ReplyCustomer: FC = () => {
   };
 
   const handleReply = () => {
+    if (replyContent.trim() === '') return messageApi.error('回复内容不能为空');
+
     Modal.confirm({
       title: '确认回复',
       content: '确定要发送这条回复吗？',
