@@ -17,12 +17,16 @@ const MaterialInquiryView: FC = () => {
   const { inquiryMaterialsData } = useInquiryRecord();
   if (!inquiryMaterialsData) return null;
 
+  const joinSupplierName = (suppliers: any[]) => {
+    return suppliers.map((supplier: any) => supplier.company_name).join(' 、 ');
+  };
+
   return (
     <div style={{ marginTop: 16 }}>
       <Tabs type="card">
         {inquiryMaterialsData.map((material: any) => (
           <Tabs.TabPane key={material.material_code} tab={material.material_code}>
-            <Space size={28} wrap style={{ padding: '0 20px' }}>
+            <Space size={14} wrap style={{ padding: '0 20px' }}>
               <Space>
                 <Typography.Text type="secondary">状态:</Typography.Text>
                 <Tag color={inquiryRecordMaterialMap(material.inquiry_material_status)?.color}>
@@ -42,6 +46,11 @@ const MaterialInquiryView: FC = () => {
               <Space>
                 <Typography.Text type="secondary">需求品牌:</Typography.Text>
                 <Typography.Text>{material.manufacturer}</Typography.Text>
+              </Space>
+
+              <Space>
+                <Typography.Text type="secondary">供应商:</Typography.Text>
+                <Typography.Text>{joinSupplierName(material.suppliers)}</Typography.Text>
               </Space>
             </Space>
 

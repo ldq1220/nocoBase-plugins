@@ -9,16 +9,17 @@
 
 import React from 'react';
 import { Avatar } from 'antd';
+import dayjs from 'dayjs';
 import '../assets/css/chatMessage.css';
 import classNames from 'classnames';
 
 interface ChatMessage {
   speakerRole: 'human' | 'ai';
   content: string;
+  createdAt: number;
 }
 
 const ChatMessages: React.FC<{ messages: ChatMessage[] }> = ({ messages }) => {
-  // 将换行符转换为<br/>
   const formatContent = (content: string) => {
     if (!content) return null;
     return content.split('\n').map((text, index) => (
@@ -29,9 +30,19 @@ const ChatMessages: React.FC<{ messages: ChatMessage[] }> = ({ messages }) => {
     ));
   };
 
+  const formatTime = (timestamp: number) => {
+    const messageDate = dayjs.unix(timestamp);
+    const today = dayjs();
+
+    if (messageDate.isSame(today, 'day')) {
+      return messageDate.format('HH:mm');
+    }
+    return messageDate.format('YYYY-MM-DD HH:mm');
+  };
+
   return (
     <div className="chatContainer">
-      {messages.map((message, index) => {
+      {[...messages].reverse().map((message, index) => {
         const isAi = message.speakerRole === 'ai';
 
         return (
@@ -41,12 +52,16 @@ const ChatMessages: React.FC<{ messages: ChatMessage[] }> = ({ messages }) => {
               size="small"
               style={{
                 backgroundColor: isAi ? '#1890ff' : '#87d068',
+                marginTop: '10px',
               }}
             >
               {isAi ? 'AI' : 'U'}
             </Avatar>
-            <div className={classNames('messageContent', isAi && 'messageContentSender')}>
-              {formatContent(message.content)}
+            <div>
+              <div className="messageTime">{formatTime(message.createdAt)}</div>
+              <div className={classNames('messageContent', isAi && 'messageContentSender')}>
+                {formatContent(message.content)}
+              </div>
             </div>
           </div>
         );

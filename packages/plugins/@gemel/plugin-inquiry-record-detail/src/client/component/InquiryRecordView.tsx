@@ -8,7 +8,7 @@
  */
 
 import React, { FC } from 'react';
-import { Descriptions, Tag, Collapse, Space } from 'antd';
+import { Descriptions, Tag, Collapse, Space, Avatar, Image } from 'antd';
 import { useInquiryRecord } from '../context/InquiryRecordContext';
 import { inquiryRecordMap } from '../utils';
 import dayjs from 'dayjs';
@@ -56,7 +56,21 @@ const InquiryRecordView: FC = () => {
                   </Descriptions.Item>
                   <Descriptions.Item label="机器人ID">{inquiryRecordData?.imBotUserId}</Descriptions.Item>
                   <Descriptions.Item label="IM客户(群)ID">{inquiryRecordData?.imUserId}</Descriptions.Item>
-                  <Descriptions.Item label="IM客户(群)头像">{inquiryRecordData?.imAvatarUrl}</Descriptions.Item>
+                  <Descriptions.Item label="IM客户(群)头像">
+                    {inquiryRecordData?.imAvatarUrl ? (
+                      <Image
+                        src={inquiryRecordData.imAvatarUrl}
+                        width={32}
+                        style={{ borderRadius: '50%' }}
+                        preview={{
+                          src: inquiryRecordData.imAvatarUrl,
+                        }}
+                      />
+                    ) : (
+                      <Avatar size={32}>未设置</Avatar>
+                    )}
+                  </Descriptions.Item>
+
                   <Descriptions.Item label="IM客户(群)备注">{inquiryRecordData?.imRemark}</Descriptions.Item>
                 </Descriptions>
               ),
