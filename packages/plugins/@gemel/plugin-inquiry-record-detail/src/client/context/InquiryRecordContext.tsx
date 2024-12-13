@@ -319,8 +319,8 @@ export const InquiryRecordProvider: FC<{
   return (
     <InquiryRecordContext.Provider
       value={{
-        inquiryRecordData: data1 || inquiryRecordData?.data,
-        inquiryMaterialsData: data2 || inquiryMaterialsData?.data,
+        inquiryRecordData: inquiryRecordData?.data,
+        inquiryMaterialsData: inquiryMaterialsData?.data,
         loading: isLoading,
         selectedRecords,
         setSelectedRecord,

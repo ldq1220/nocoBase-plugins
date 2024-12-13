@@ -1,6 +1,6 @@
 {
   "name": "@gemel/plugin-inquiry-record-detail",
-  "version": "1.4.11-alpha",
+  "version": "1.4.15-alpha",
   "main": "dist/server/index.js",
   "displayName": "Inquiry Record Details",
   "displayName.zh-CN": "询料记录详情",

@@ -67,7 +67,7 @@ const InquiryRecordView: FC = () => {
                         }}
                       />
                     ) : (
-                      <Avatar size={32}>未设置</Avatar>
+                      <Avatar size={32}></Avatar>
                     )}
                   </Descriptions.Item>
 
