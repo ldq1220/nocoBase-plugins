@@ -37,26 +37,35 @@ const InquiryRecordView: FC = () => {
                     {inquiryRecordData?.origin_inquiry_text}
                   </Descriptions.Item>
 
-                  <Descriptions.Item label="询料时间">
+                  <Descriptions.Item label="询料时间" span={1}>
                     {inquiryRecordData?.createdAt && dayjs(inquiryRecordData.createdAt).format('YYYY-MM-DD HH:mm:ss')}
                   </Descriptions.Item>
 
-                  <Descriptions.Item label="询料状态">
+                  <Descriptions.Item label="询料状态" span={1}>
                     <Tag color={inquiryRecordMap(inquiryRecordData?.inquiry_status)?.color}>
                       {inquiryRecordMap(inquiryRecordData?.inquiry_status)?.label}
                     </Tag>
                   </Descriptions.Item>
 
-                  <Descriptions.Item label="IM客户(群)名称">{inquiryRecordData?.imName}</Descriptions.Item>
-                  <Descriptions.Item label="IM平台">
-                    <Tag color="volcano">{inquiryRecordData?.imPlatform}</Tag>
+                  <Descriptions.Item label="IM客户(群)名称" span={1}>
+                    {inquiryRecordData?.imName}
                   </Descriptions.Item>
-                  <Descriptions.Item label="群/好友标识">
-                    <Tag color="volcano">{inquiryRecordData?.imIsGroup}</Tag>
+                  <Descriptions.Item label="IM平台" span={1}>
+                    {inquiryRecordData?.imPlatform ? <Tag color="volcano">{inquiryRecordData?.imPlatform}</Tag> : <></>}
                   </Descriptions.Item>
-                  <Descriptions.Item label="机器人ID">{inquiryRecordData?.imBotUserId}</Descriptions.Item>
-                  <Descriptions.Item label="IM客户(群)ID">{inquiryRecordData?.imUserId}</Descriptions.Item>
-                  <Descriptions.Item label="IM客户(群)头像">
+                  <Descriptions.Item label="群/好友标识" span={1}>
+                    {inquiryRecordData?.imIsGroup ? <Tag color="volcano">{inquiryRecordData?.imIsGroup}</Tag> : <></>}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="机器人ID" span={1}>
+                    {inquiryRecordData?.imBotUserId}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="IM客户ID" span={1}>
+                    {inquiryRecordData?.imUserId}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="IM群ID" span={1}>
+                    {inquiryRecordData?.imGroupId}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="IM客户(群)头像" span={1}>
                     {inquiryRecordData?.imAvatarUrl ? (
                       <Image
                         src={inquiryRecordData.imAvatarUrl}
@@ -71,7 +80,9 @@ const InquiryRecordView: FC = () => {
                     )}
                   </Descriptions.Item>
 
-                  <Descriptions.Item label="IM客户(群)备注">{inquiryRecordData?.imRemark}</Descriptions.Item>
+                  <Descriptions.Item label="IM客户(群)备注" span={1}>
+                    {inquiryRecordData?.imRemark}
+                  </Descriptions.Item>
                 </Descriptions>
               ),
             },

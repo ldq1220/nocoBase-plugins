@@ -24,7 +24,8 @@ export const inquiryRecordMaterialMap = (status: string) => {
     '1': { label: '采集失败', color: 'red' },
     '2': { label: '待询价', color: 'magenta' },
     '3': { label: '询价中', color: 'blue' },
-    '4': { label: '已回复', color: 'purple' },
+    '4': { label: '待回复', color: 'gold' },
+    '5': { label: '已回复', color: 'purple' },
   };
   return map[status];
 };

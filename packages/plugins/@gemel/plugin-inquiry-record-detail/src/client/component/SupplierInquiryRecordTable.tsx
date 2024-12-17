@@ -54,14 +54,27 @@ const SupplierInquiryRecordTable: FC<{ dataSource: any[]; tabKey: string }> = ({
       title: '是否含税',
       align: 'center',
       render: (_, record) => {
-        return <span>{record.has_tax_included === 'true' ? '含税' : '未税'}</span>;
+        return (
+          <span>
+            {record.has_tax_included === 'true' ? <Tag color="green">含税</Tag> : <Tag color="orange">未税</Tag>}
+          </span>
+        );
+      },
+    },
+    {
+      title: '是否采用',
+      align: 'center',
+      render: (_, record) => {
+        return <span>{record.has_adopt === '1' ? <Tag color="purple">采用</Tag> : <Tag>不采用</Tag>}</span>;
       },
     },
     {
       title: '库存状况',
       align: 'center',
       render: (_, record) => {
-        return <span>{record.store_status}</span>;
+        return (
+          <span>{record.store_status === '满足' ? <Tag color="green">满足</Tag> : <Tag color="red">不满足</Tag>}</span>
+        );
       },
     },
     {
@@ -77,9 +90,9 @@ const SupplierInquiryRecordTable: FC<{ dataSource: any[]; tabKey: string }> = ({
       render: (_, record) => {
         return (
           <Popover content={<ChatMessages messages={record.chat_messages || []} />} trigger="hover" placement="left">
-            <span style={{ cursor: 'pointer' }}>
+            <div style={{ cursor: 'pointer' }}>
               <ChatMessagesIcon />
-            </span>
+            </div>
           </Popover>
         );
       },

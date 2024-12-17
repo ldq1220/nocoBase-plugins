@@ -24,25 +24,25 @@ export const InquiryRecordProvider: FC<{
   inquiryRecordId: string | number;
 }> = ({ children, inquiryRecordId }) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedRecords, setSelectedRecords] = useState<Record<string, any>>({});
+  const [selectedRecords, setSelectedRecords] = useState<any>({});
 
   // 设置选中的记录
   const setSelectedRecord = (tabKey: string, record: any) => {
-    setSelectedRecords((prev) => {
+    setSelectedRecords((prev: any) => {
       if (record === null) {
         const { [tabKey]: _, ...rest } = prev;
         return rest;
       }
 
-      const newRecords = {
+      const newRecords: any = {
         ...prev,
         [tabKey]: record,
       };
 
       // 按照记录的id进行排序
       const sortedEntries = Object.entries(newRecords).sort((a, b) => {
-        const idA = a[1]?.quiry_material_id ?? 0;
-        const idB = b[1]?.quiry_material_id ?? 0;
+        const idA = (a[1] as { quiry_material_id?: number })?.quiry_material_id ?? 0;
+        const idB = (b[1] as { quiry_material_id?: number })?.quiry_material_id ?? 0;
         return idA - idB;
       });
 
@@ -91,12 +91,13 @@ export const InquiryRecordProvider: FC<{
     inquiry_status: '2',
     company_id: 4,
     gather_error: null,
-    reply_text: null,
+    reply_text: '物料: 0402WGF1621TCE -- 价格: 0.82 库存状况: 不满足 \n\n阿巴阿巴阿巴 ',
     imName: '记梦',
     imPlatform: 'qq',
     imBotUserId: '2850870416',
     imIsGroup: '好友',
     imUserId: '1582649509',
+    imGroupId: '',
     imRemark: '',
     createdById: 1,
     updatedById: 1,
@@ -276,7 +277,7 @@ export const InquiryRecordProvider: FC<{
             },
           ],
           inquiry_status: '2',
-          has_adopt: '0',
+          has_adopt: '1',
           createdById: null,
           updatedById: 1,
           store_status: '不满足',

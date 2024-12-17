@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import { Avatar } from 'antd';
+import { Avatar, Empty } from 'antd'; // 引入Empty组件
 import dayjs from 'dayjs';
 import '../assets/css/chatMessage.css';
 import classNames from 'classnames';
@@ -39,6 +39,18 @@ const ChatMessages: React.FC<{ messages: ChatMessage[] }> = ({ messages }) => {
     }
     return messageDate.format('YYYY-MM-DD HH:mm');
   };
+
+  // 添加空状态判断
+  if (!messages?.length) {
+    return (
+      <div
+        className="chatContainer"
+        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}
+      >
+        <Empty description="暂无聊天记录" />
+      </div>
+    );
+  }
 
   return (
     <div className="chatContainer">
