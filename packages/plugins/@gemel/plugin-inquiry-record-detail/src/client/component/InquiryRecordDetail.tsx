@@ -35,16 +35,24 @@ export const InquiryRecordDetail: FC<InquiryRecordDetailProps> = observer(
 );
 
 const InquiryRecordContent: FC = () => {
-  const { loading } = useInquiryRecord();
+  const { loading, replayLoading } = useInquiryRecord();
   if (loading) return <Spin spinning={loading} />;
 
   return (
-    <>
+    <Spin
+      spinning={replayLoading}
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100%',
+      }}
+    >
       <InquiryRecordView />
       <Divider>物料询价记录</Divider>
       <MaterialInquiryView />
       <Divider>回复客户</Divider>
       <ReplyCustomer />
-    </>
+    </Spin>
   );
 };

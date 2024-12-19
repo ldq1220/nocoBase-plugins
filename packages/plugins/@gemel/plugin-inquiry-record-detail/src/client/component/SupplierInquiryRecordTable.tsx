@@ -65,7 +65,7 @@ const SupplierInquiryRecordTable: FC<{ dataSource: any[]; tabKey: string }> = ({
       title: '是否采用',
       align: 'center',
       render: (_, record) => {
-        return <span>{record.has_adopt === '1' ? <Tag color="purple">采用</Tag> : <Tag>不采用</Tag>}</span>;
+        return <span>{record.has_adopt === '1' ? <Tag color="purple">已采用</Tag> : <Tag>未采用</Tag>}</span>;
       },
     },
     {

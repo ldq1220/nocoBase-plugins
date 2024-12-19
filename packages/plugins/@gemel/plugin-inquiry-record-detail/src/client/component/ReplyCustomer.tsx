@@ -17,7 +17,8 @@ const { TextArea } = Input;
 
 const ReplyCustomer: FC = () => {
   const [messageApi, contextHolder] = message.useMessage();
-  const { inquiryRecordData, inquiryMaterialsData, selectedRecords, setSelectedRecord } = useInquiryRecord();
+  const { inquiryRecordData, inquiryMaterialsData, selectedRecords, setSelectedRecord, setReplayLoading } =
+    useInquiryRecord();
   const [replyContent, setReplyContent] = useState('');
   const initialized = useRef(false);
 
@@ -66,6 +67,8 @@ const ReplyCustomer: FC = () => {
       content: '确定要发送这条回复吗？',
       onOk: () => {
         try {
+          setReplayLoading(true);
+
           const inquiryRecordId = inquiryRecordData.id;
           const currentSelectRecordIds = Object.values(selectedRecords).map((record) => record.id);
 
@@ -101,7 +104,10 @@ const ReplyCustomer: FC = () => {
           // 4. 调用机器人发送回复内容
           sendReply(replyContent, inquiryRecordData);
 
-          messageApi.success('回复成功，请手动刷新CRM数据，查看最新询料状态！');
+          setTimeout(() => {
+            setReplayLoading(false);
+            messageApi.success('回复消息已发送，请手动刷新CRM数据，查看最新询料状态！');
+          }, 1000);
         } catch (error) {
           console.error('回复失败:', error);
           messageApi.error('操作失败');

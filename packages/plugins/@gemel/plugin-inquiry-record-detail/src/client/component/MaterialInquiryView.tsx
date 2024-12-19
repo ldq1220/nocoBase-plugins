@@ -47,11 +47,6 @@ const MaterialInquiryView: FC = () => {
                 <Typography.Text type="secondary">需求品牌:</Typography.Text>
                 <Typography.Text>{material.manufacturer}</Typography.Text>
               </Space>
-
-              <Space>
-                <Typography.Text type="secondary">供应商:</Typography.Text>
-                <Typography.Text>{joinSupplierName(material.suppliers)}</Typography.Text>
-              </Space>
             </Space>
 
             <SupplierInquiryRecordTable
