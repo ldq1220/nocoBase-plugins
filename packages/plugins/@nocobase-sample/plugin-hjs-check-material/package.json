@@ -1,0 +1,15 @@
+{
+  "name": "@nocobase-sample/plugin-hjs-check-material",
+  "version": "1.3.20-beta",
+  "main": "dist/server/index.js",
+  "displayName": "Query material",
+  "displayName.zh-CN": "查询物料",
+  "description": "Check inventory and price of materials by material code",
+  "description.zh-CN": "通过物料编码，查询物料的库存和价格",
+  "dependencies": {},
+  "peerDependencies": {
+    "@nocobase/client": "1.x",
+    "@nocobase/server": "1.x",
+    "@nocobase/test": "1.x"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "@nocobase-sample/plugin-hjs-count-total",
+  "version": "1.4.0-alpha",
+  "main": "dist/server/index.js",
+  "displayName": "One-click search",
+  "displayName.zh-CN": "一键查料",
+  "description": "Check the material inventory and unit price, and calculate the total price.",
+  "description.zh-CN": "查物料的可以库存和单价，并计算总价。",
+  "dependencies": {
+    "number-precision": "^1.6.0"
+  },
+  "peerDependencies": {
+    "@nocobase/client": "1.x",
+    "@nocobase/server": "1.x",
+    "@nocobase/test": "1.x"
+  }
+}

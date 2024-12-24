@@ -1,0 +1,15 @@
+{
+  "name": "@gemel/plugin-get-company",
+  "version": "1.4.4-alpha",
+  "main": "dist/server/index.js",
+  "displayName": "Search for enterprise information",
+  "displayName.zh-CN": "搜索企业信息",
+  "description": "Call the shared service interface to search for enterprise data, select and rewrite information.",
+  "description.zh-CN": "调用共用服务接口搜索企业数据，选择并反写信息。",
+  "dependencies": {},
+  "peerDependencies": {
+    "@nocobase/client": "1.x",
+    "@nocobase/server": "1.x",
+    "@nocobase/test": "1.x"
+  }
+}

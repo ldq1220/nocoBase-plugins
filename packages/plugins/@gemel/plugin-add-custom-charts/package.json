@@ -1,0 +1,19 @@
+{
+  "name": "@gemel/plugin-add-custom-charts",
+  "version": "1.4.0-alpha.15",
+  "main": "dist/server/index.js",
+  "displayName": "Add Custom Charts",
+  "displayName.zh-CN": "添加自定义图表",
+  "description": "Add custom charts",
+  "description.zh-CN": "添加自定义图表",
+  "peerDependencies": {
+    "@nocobase/client": "1.x",
+    "@nocobase/server": "1.x",
+    "@nocobase/test": "1.x"
+  },
+  "devDependencies": {
+    "deepmerge": "^4.3.1",
+    "echarts": "^5.5.1",
+    "echarts-for-react": "^3.0.2"
+  }
+}
