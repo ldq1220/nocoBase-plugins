@@ -8,16 +8,20 @@
  */
 
 import { createStyles } from '@nocobase/client';
-
+import { PageBackgroundColor } from '../constants';
 export const useStyles = createStyles(({ token, css }) => {
   return {
     nbMobile: css`
+      body {
+        background-color: ${PageBackgroundColor};
+      }
       -webkit-overflow-scrolling: touch;
       display: initial;
 
       & ::-webkit-scrollbar {
         display: none;
       }
+
       .nb-details .ant-formily-item-feedback-layout-loose {
         margin-bottom: 5px;
       }
@@ -113,6 +117,12 @@ export const useStyles = createStyles(({ token, css }) => {
       }
       .mobile-page-header .adm-tabs-tab {
         font-size: 14px;
+        height: 100%;
+      }
+      .nb-mobile-setting {
+        [data-menu-id$='-theme'] {
+          display: none;
+        }
       }
     `,
   };

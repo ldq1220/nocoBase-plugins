@@ -15,9 +15,13 @@ on:
         description: 'Please enter the pr number of nocobase/nocobase repository'
 
 jobs:
+  get-plugins:
+    uses: nocobase/nocobase/.github/workflows/get-plugins.yml@main
+    secrets: inherit
   build-and-push:
     if: github.event.pull_request.head.repo.fork != true
     runs-on: ubuntu-latest
+    needs: get-plugins
     services:
       verdaccio:
         image: verdaccio/verdaccio:latest
@@ -27,12 +31,15 @@ jobs:
       - name: Get pro plugins
         id: get-info
         run: |
-          if [[ "${{ github.head_ref || github.ref_name }}" == "main" ]]; then
-            echo "proRepos=$(echo '${{ vars.PRO_PLUGIN_REPOS }}')" >> $GITHUB_OUTPUT
-            echo "branch=$(echo 'main')" >> $GITHUB_OUTPUT
-          else
-            echo "proRepos=$(echo '${{ vars.NEXT_PRO_PLUGIN_REPOS }}')" >> $GITHUB_OUTPUT
+          if [[ "${{ github.head_ref || github.ref_name }}" == "next" ]]; then
+            echo "proRepos=$(echo '${{ needs.get-plugins.outputs.beta-plugins }}')" >> $GITHUB_OUTPUT
             echo "branch=$(echo 'next')" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.head_ref || github.ref_name }}" == "develop" ]]; then
+            echo "proRepos=$(echo '${{ needs.get-plugins.outputs.alpha-plugins }}')" >> $GITHUB_OUTPUT
+            echo "branch=$(echo 'develop')" >> $GITHUB_OUTPUT
+          else
+            echo "proRepos=$(echo '${{ needs.get-plugins.outputs.rc-plugins }}')" >> $GITHUB_OUTPUT
+            echo "branch=$(echo 'main')" >> $GITHUB_OUTPUT
           fi
       - uses: actions/create-github-app-token@v1
         id: app-token
@@ -102,14 +109,16 @@ jobs:
         id: get-tag
         run: |
           if [ "${{ inputs.pr_number }}" != "" ]; then
-            echo "tag=pr-${{ inputs.pr_number }}" >> "$GITHUB_OUTPUT"
+            echo "tag=pr-${{ inputs.pr_number }}-pro" >> "$GITHUB_OUTPUT"
+          elif [ "${{ inputs.nocobase_pr_number }}" != "" ]; then
+            echo "tag=pr-${{ inputs.nocobase_pr_number }}" >> "$GITHUB_OUTPUT"
           else
             echo "tag=${{ github.head_ref || github.ref_name }}" >> "$GITHUB_OUTPUT"
           fi
       - name: Set tags
         id: set-tags
         run: |
-          echo "::set-output name=tags::${{ secrets.ALI_DOCKER_REGISTRY }}/nocobase/nocobase:${{ steps.get-tag.outputs.tag }}-pro"
+          echo "::set-output name=tags::${{ secrets.ALI_DOCKER_REGISTRY }}/nocobase/nocobase:${{ steps.get-tag.outputs.tag }}"
       - name: Set variables
         run: |
           target_directory="./packages/pro-plugins/@nocobase"
@@ -117,12 +126,12 @@ jobs:
           trimmed_variable=$(echo "$subdirectories" | xargs)
           packageNames="@nocobase/${trimmed_variable// / @nocobase/}"
           pluginNames="${trimmed_variable//plugin-/}"
-          BEFORE_PACK_NOCOBASE="yarn add @nocobase/plugin-notifications @nocobase/plugin-disable-pm-add $packageNames -W"
+          BEFORE_PACK_NOCOBASE="yarn add @nocobase/plugin-notifications @nocobase/plugin-disable-pm-add $packageNames -W --production"
           APPEND_PRESET_LOCAL_PLUGINS="notifications,disable-pm-add,${pluginNames// /,}"
           echo "var1=$BEFORE_PACK_NOCOBASE" >> $GITHUB_OUTPUT
           echo "var2=$APPEND_PRESET_LOCAL_PLUGINS" >> $GITHUB_OUTPUT
         id: vars
-      - name: Build and push - ${{ steps.get-tag.outputs.tag }}-pro
+      - name: Build and push - ${{ steps.get-tag.outputs.tag }}
         uses: docker/build-push-action@v3
         with:
           context: .
@@ -137,9 +146,17 @@ jobs:
           tags: ${{ steps.set-tags.outputs.tags }}
       - name: Deploy NocoBase
         run: |
-          curl --retry 2 --location --request POST "${{secrets.NOCOBASE_DEPLOY_HOST}}${{ steps.get-tag.outputs.tag }}-pro" \
+          curl --retry 2 --location --request POST "${{secrets.NOCOBASE_DEPLOY_HOST}}${{ steps.get-tag.outputs.tag }}" \
           --header 'Content-Type: application/json' \
           -d "{
-              \"tag\": \"${{ steps.get-tag.outputs.tag }}-pro\",
+              \"tag\": \"${{ steps.get-tag.outputs.tag }}\",
+              \"dialect\": \"postgres\"
+          }"
+      - name: Deploy NocoBase V2
+        run: |
+          curl --retry 2 --location --request POST "${{secrets.NOCOBASE_DEPLOY_HOST_V2}}${{ steps.get-tag.outputs.tag }}" \
+          --header 'Content-Type: application/json' \
+          -d "{
+              \"tag\": \"${{ steps.get-tag.outputs.tag }}\",
               \"dialect\": \"postgres\"
           }"

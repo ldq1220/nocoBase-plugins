@@ -83,13 +83,13 @@ export const useRemoveGridFormItem = () => {
   };
 };
 
-export const findTableColumn = (schema: Schema, key: string, action: string, deepth = 0) => {
+export const findTableColumn = (schema: Schema, key: string, action: string, name: string) => {
   return schema.reduceProperties((buf, s) => {
-    if (s[key] === action) {
+    if (s[key] === action && (!name || s.name === name)) {
       return s;
     }
     const c = s.reduceProperties((buf, s) => {
-      if (s[key] === action) {
+      if (s[key] === action && (!name || s.name === name)) {
         return s;
       }
       return buf;
@@ -121,6 +121,7 @@ export function useTableColumnInitializerFields() {
   const isReadPretty = isSubTable ? form.readPretty : true;
 
   return currentFields
+    .filter((v) => !v.collectionName || v.collectionName === name)
     .filter((field) => field?.interface && field?.interface !== 'subTable' && !field?.treeChildren)
     .map((field) => {
       const interfaceConfig = getInterface(field.interface);
@@ -379,6 +380,7 @@ export const useFormItemInitializerFields = (options?: any) => {
   const action = fieldSchema?.['x-action'];
 
   return currentFields
+    .filter((v) => !v.collectionName || v.collectionName === name)
     ?.filter((field) => field?.interface && !field?.treeChildren)
     ?.map((field) => {
       const interfaceConfig = getInterface(field.interface);
@@ -446,6 +448,7 @@ export const useFilterFormItemInitializerFields = (options?: any) => {
   const action = fieldSchema?.['x-action'];
 
   return currentFields
+    .filter((v) => !v.collectionName || v.collectionName === name)
     ?.filter((field) => field?.interface && getInterface(field.interface)?.filterable)
     ?.map((field) => {
       const interfaceConfig = getInterface(field.interface);

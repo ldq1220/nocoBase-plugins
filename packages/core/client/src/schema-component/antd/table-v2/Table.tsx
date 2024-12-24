@@ -178,7 +178,7 @@ const useTableColumns = (props: { showDel?: any; isSubTable?: boolean }, paginat
       return columns;
     }
     const res = [
-      ...adjustColumnOrder(columns),
+      ...columns,
       {
         title: render(),
         dataIndex: 'TABLE_COLUMN_INITIALIZER',
@@ -186,7 +186,7 @@ const useTableColumns = (props: { showDel?: any; isSubTable?: boolean }, paginat
         render: designable
           ? () => <div style={{ width: '100%', minWidth: '180px' }} className="nb-column-initializer" />
           : null,
-        fixed: 'right',
+        fixed: designable ? 'right' : 'none',
       },
     ];
 
@@ -224,7 +224,7 @@ const useTableColumns = (props: { showDel?: any; isSubTable?: boolean }, paginat
       });
     }
 
-    return res;
+    return adjustColumnOrder(res);
   }, [columns, exists, field, render, props.showDel, designable]);
 
   return tableColumns;
@@ -588,6 +588,7 @@ const InternalNocoBaseTable = React.memo(
       field,
       ...others
     } = props;
+    const { token } = useToken();
 
     return (
       <div
@@ -608,6 +609,21 @@ const InternalNocoBaseTable = React.memo(
                   }
                   .ant-table-body {
                     min-height: ${tableHeight}px;
+                  }
+                  .ant-table-cell {
+                    padding: 16px 8px;
+                  }
+                  .ant-table-middle .ant-table-cell {
+                    padding: 12px ${token.paddingXS}px;
+                  }
+                  .ant-table-small .ant-table-cell {
+                    padding: 8px ${token.paddingXS}px;
+                  }
+                  .ant-table-cell-fix-right {
+                    padding: 8px 16px !important;
+                  }
+                  .ant-table-thead .ant-table-cell {
+                    padding: 8px 16px;
                   }
                 }
               }
@@ -675,7 +691,7 @@ export const Table: any = withDynamicSchemaProps(
     } = { ...others1, ...others2 } as any;
     const field = useArrayField(others);
     const schema = useFieldSchema();
-    const { size = 'middle' } = schema?.['x-component-props'] || {};
+    const { size = 'small' } = schema?.['x-component-props'] || {};
     const collection = useCollection();
     const isTableSelector = schema?.parent?.['x-decorator'] === 'TableSelectorProvider';
     const ctx = isTableSelector ? useTableSelectorContext() : useTableBlockContext();

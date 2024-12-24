@@ -58,14 +58,16 @@ class Package {
       return [version, this.data.versions[version].dist.tarball];
     }
 
-    if (version.includes('beta')) {
-      version = version.split('beta')[0] + 'beta';
-    } else if (version.includes('alpha')) {
-      const prefix = (version = version.split('alpha')[0]);
-      version = Object.keys(this.data.versions)
-        .filter((ver) => ver.startsWith(`${prefix}alpha`))
-        .sort()
-        .pop();
+    const keys = version.split('.');
+    const length = keys.length;
+
+    if (version.includes('rc')) {
+      version = version.split('-').shift();
+    }
+
+    if (length === 5) {
+      keys.pop();
+      version = keys.join('.');
     }
 
     if (version === 'latest') {
@@ -93,9 +95,23 @@ class Package {
     return false;
   }
 
+  async isDownloaded(version) {
+    const packageFile = path.resolve(process.env.PLUGIN_STORAGE_PATH, this.packageName, 'package.json');
+    if (await fs.exists(packageFile)) {
+      const json = await fs.readJson(packageFile);
+      if (json.version === version) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   async download(options = {}) {
     if (await this.isDevPackage()) {
       console.log(chalk.yellowBright(`Skipped: ${this.packageName} is dev package`));
+      return;
+    }
+    if (await this.isDownloaded(options.version)) {
       return;
     }
     await this.getInfo();
@@ -105,6 +121,9 @@ class Package {
     }
     try {
       const [version, url] = this.getTarball(options.version);
+      if (await this.isDownloaded(version)) {
+        return;
+      }
       const response = await axios({
         url,
         responseType: 'stream',
@@ -121,7 +140,7 @@ class Package {
           .on('finish', resolve)
           .on('error', reject);
       });
-      console.log(chalk.greenBright(`Download success: ${this.packageName}@${version}`));
+      console.log(chalk.greenBright(`Downloaded: ${this.packageName}@${version}`));
     } catch (error) {
       console.log(chalk.redBright(`Download failed: ${this.packageName}`));
     }
@@ -170,12 +189,31 @@ class PackageManager {
       },
       responseType: 'json',
     });
-    return res.data.data;
+    return {
+      licensed_plugins: res.data?.data || [],
+      commercial_plugins: res.data?.meta?.commercial_plugins || [],
+    };
   }
 
   async getPackages() {
     const pkgs = await this.getProPackages();
+
+    if (Array.isArray(pkgs)) {
+      return {
+        commercial_plugins: pkgs,
+        licensed_plugins: pkgs,
+      };
+    }
     return pkgs;
+  }
+
+  async removePackage(packageName) {
+    const dir = path.resolve(process.env.PLUGIN_STORAGE_PATH, packageName);
+    const r = await fs.exists(dir);
+    if (r) {
+      console.log(chalk.yellowBright(`Removed: ${packageName}`));
+      await fs.rm(dir, { force: true, recursive: true });
+    }
   }
 
   async download(options = {}) {
@@ -183,8 +221,13 @@ class PackageManager {
     if (!this.token) {
       return;
     }
-    const pkgs = await this.getPackages();
-    for (const pkg of pkgs) {
+    const { commercial_plugins, licensed_plugins } = await this.getPackages();
+    for (const pkg of commercial_plugins) {
+      if (!licensed_plugins.includes(pkg)) {
+        await this.removePackage(pkg);
+      }
+    }
+    for (const pkg of licensed_plugins) {
       await this.getPackage(pkg).download({ version });
     }
   }
@@ -200,8 +243,12 @@ module.exports = (cli) => {
     .command('download-pro')
     .option('-V, --version [version]')
     .action(async () => {
-      const { NOCOBASE_PKG_URL, NOCOBASE_PKG_USERNAME, NOCOBASE_PKG_PASSWORD } = process.env;
-      if (!(NOCOBASE_PKG_URL && NOCOBASE_PKG_USERNAME && NOCOBASE_PKG_PASSWORD)) {
+      const {
+        NOCOBASE_PKG_URL = 'https://pkg.nocobase.com/',
+        NOCOBASE_PKG_USERNAME,
+        NOCOBASE_PKG_PASSWORD,
+      } = process.env;
+      if (!(NOCOBASE_PKG_USERNAME && NOCOBASE_PKG_PASSWORD)) {
         return;
       }
       const credentials = { username: NOCOBASE_PKG_USERNAME, password: NOCOBASE_PKG_PASSWORD };
